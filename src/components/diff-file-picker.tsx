@@ -4,8 +4,27 @@ import { FileTree, useFileTree } from '@pierre/trees/react'
 import { DIFF_CATEGORY_DETAILS } from '../lib/diff-files'
 import {
   prepareDiffFileTreeInput,
+  summarizeDiffFilePickerFolders,
   type DiffFilePickerEntry,
 } from '../lib/file-picker'
+
+const FOLDER_SUMMARY_HOVER_CSS = `
+[data-item-type='folder'] > [data-item-section='decoration'] {
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+[data-item-type='folder']:is(:hover, :focus-visible, [data-item-focused='true'])
+  > [data-item-section='decoration'] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-item-type='folder'] > [data-item-section='decoration'] {
+    transition: none;
+  }
+}
+`
 
 type DiffFilePickerProps = {
   entries: readonly DiffFilePickerEntry[]
@@ -20,6 +39,10 @@ export default function DiffFilePicker({
   const preparedInput = useMemo(() => prepareDiffFileTreeInput(paths), [paths])
   const entriesByPath = useMemo(
     () => new Map(entries.map((entry) => [entry.path, entry])),
+    [entries],
+  )
+  const folderSummariesByPath = useMemo(
+    () => summarizeDiffFilePickerFolders(entries),
     [entries],
   )
   const gitStatus = useMemo(
@@ -40,11 +63,34 @@ export default function DiffFilePicker({
     icons: 'standard',
     search: true,
     stickyFolders: true,
+    unsafeCSS: FOLDER_SUMMARY_HOVER_CSS,
     renderRowDecoration({ item }) {
       const entry = entriesByPath.get(item.path)
 
       if (!entry) {
-        return null
+        const summary = folderSummariesByPath.get(item.path)
+
+        if (!summary || item.kind !== 'directory') {
+          return null
+        }
+
+        const fileLabel = summary.files === 1 ? 'file' : 'files'
+
+        return {
+          text: `${summary.files} +${summary.additions} −${summary.deletions}`,
+          title: `${summary.files} changed ${fileLabel} · +${summary.additions} −${summary.deletions}`,
+          parts: [
+            {
+              text: `${summary.files} `,
+              color: 'var(--trees-fg-muted-override)',
+            },
+            {
+              text: `+${summary.additions} `,
+              color: 'var(--addition)',
+            },
+            { text: `−${summary.deletions}`, color: 'var(--deletion)' },
+          ],
+        }
       }
 
       const category = DIFF_CATEGORY_DETAILS[entry.category]

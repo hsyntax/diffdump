@@ -27,6 +27,12 @@ export type DiffFilePickerEntry = {
   viewed: boolean
 }
 
+export type DiffFilePickerFolderSummary = Readonly<{
+  files: number
+  additions: number
+  deletions: number
+}>
+
 export function prepareDiffFileTreeInput(
   paths: readonly string[],
 ): FileTreePreparedInput {
@@ -68,6 +74,32 @@ export function createDiffFilePickerEntries(
       viewed: file.viewed,
     }
   })
+}
+
+export function summarizeDiffFilePickerFolders(
+  entries: readonly DiffFilePickerEntry[],
+): ReadonlyMap<string, DiffFilePickerFolderSummary> {
+  const summaries = new Map<string, DiffFilePickerFolderSummary>()
+
+  for (const entry of entries) {
+    let separatorIndex = entry.path.lastIndexOf('/')
+
+    while (separatorIndex > 0) {
+      const ancestorPath = entry.path.slice(0, separatorIndex)
+      const folderPath = `${ancestorPath}/`
+      const summary = summaries.get(folderPath)
+
+      summaries.set(folderPath, {
+        files: (summary?.files ?? 0) + 1,
+        additions: (summary?.additions ?? 0) + entry.additions,
+        deletions: (summary?.deletions ?? 0) + entry.deletions,
+      })
+
+      separatorIndex = ancestorPath.lastIndexOf('/')
+    }
+  }
+
+  return summaries
 }
 
 function normalizeTreePath(path: string): string {
