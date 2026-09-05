@@ -36,10 +36,19 @@ export type DiffFilePickerFolderSummary = Readonly<{
 export function prepareDiffFileTreeInput(
   paths: readonly string[],
 ): FileTreePreparedInput {
-  /* Patch and category order can split files from the same directory into
-     separate runs. Let the tree normalize that input before using its
-     presorted builder, which requires directory siblings to be contiguous. */
+  // Use the tree’s canonical folder-first, natural filename order.
   return prepareFileTreeInput(paths)
+}
+
+export function orderDiffFilePickerEntries(
+  entries: readonly DiffFilePickerEntry[],
+): DiffFilePickerEntry[] {
+  const entriesByPath = new Map(entries.map((entry) => [entry.path, entry]))
+  const preparedInput = prepareDiffFileTreeInput(
+    entries.map((entry) => entry.path),
+  )
+
+  return preparedInput.paths.map((path) => entriesByPath.get(path)!)
 }
 
 export function createDiffFilePickerEntries(

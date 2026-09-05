@@ -4,10 +4,92 @@ import { FileTree } from '@pierre/trees'
 import {
   createDiffFilePickerEntries,
   prepareDiffFileTreeInput,
+  orderDiffFilePickerEntries,
   summarizeDiffFilePickerFolders,
 } from './file-picker'
 
 describe('diff file picker entries', () => {
+  it.each([false, true])(
+    'matches the tree’s file order with flattened folders: %s',
+    (flattenEmptyDirectories) => {
+      const entries = createDiffFilePickerEntries(
+        [
+          'README.md',
+          'src/file10.ts',
+          'src/Zebra.ts',
+          'docs/guide.md',
+          'src/nested/deep/index.ts',
+          '/src//file2.ts',
+          'src/alpha.ts',
+          'src/file2.ts',
+        ].map((name, index) => ({
+          itemId: `file-${index}`,
+          name,
+          type: 'change',
+          category: 'source',
+          additions: index,
+          deletions: 0,
+          viewed: index === 5,
+        })),
+      )
+      const originalEntries = [...entries]
+      const ordered = orderDiffFilePickerEntries(entries)
+      const tree = new FileTree({
+        preparedInput: prepareDiffFileTreeInput(
+          entries.map((entry) => entry.path),
+        ),
+        flattenEmptyDirectories,
+        initialExpansion: 'open',
+      })
+
+      try {
+        const treePaths = tree
+          .getVisibleRows(0, tree.getVisibleCount())
+          .filter((row) => row.kind === 'file')
+          .map((row) => row.path)
+
+        expect(ordered.map((entry) => entry.path)).toEqual(treePaths)
+        expect(ordered.map((entry) => entry.itemId)).toEqual([
+          'file-3',
+          'file-4',
+          'file-6',
+          'file-7',
+          'file-5',
+          'file-1',
+          'file-2',
+          'file-0',
+        ])
+        expect(ordered.find((entry) => entry.itemId === 'file-5')).toBe(
+          entries[5],
+        )
+        expect(entries).toEqual(originalEntries)
+      } finally {
+        tree.cleanUp()
+      }
+    },
+  )
+
+  it('orders a filtered list and handles an empty list', () => {
+    const entries = createDiffFilePickerEntries(
+      ['src/test10.ts', 'src/test2.ts', 'README.md'].map((name, index) => ({
+        itemId: String(index),
+        name,
+        type: 'change',
+        category: index < 2 ? 'tests' : 'docs',
+        additions: 0,
+        deletions: 0,
+        viewed: false,
+      })),
+    )
+
+    expect(
+      orderDiffFilePickerEntries(
+        entries.filter((entry) => entry.category === 'tests'),
+      ).map((entry) => entry.itemId),
+    ).toEqual(['1', '0'])
+    expect(orderDiffFilePickerEntries([])).toEqual([])
+  })
+
   it('searches files when patch order splits a directory into separate runs', () => {
     const paths = [
       'apps/app/src/durable-objects/upstream.ts',

@@ -128,7 +128,10 @@ import {
   getExpiryCountdownUpdateDelay,
 } from '../lib/expiry'
 import { isDiffFindShortcut } from '../lib/diff-find-shortcut'
-import { createDiffFilePickerEntries } from '../lib/file-picker'
+import {
+  createDiffFilePickerEntries,
+  orderDiffFilePickerEntries,
+} from '../lib/file-picker'
 import {
   readStoredViewedFileIds,
   writeStoredViewedFileIds,
@@ -236,7 +239,7 @@ export default function DiffViewer(props: DiffViewerProps) {
   const [wrapLines, setWrapLines] = useState(false)
   const [categoryFilter, setCategoryFilter] =
     useState<DiffCategoryFilter>('all')
-  const [fileOrder, setFileOrder] = useState<DiffFileOrder>('patch')
+  const [fileOrder, setFileOrder] = useState<DiffFileOrder | 'tree'>('tree')
   const resolvedTheme = useResolvedTheme()
   const [copied, setCopied] = useState(false)
   const [filePickerOpen, setFilePickerOpen] = useState(false)
@@ -338,13 +341,42 @@ export default function DiffViewer(props: DiffViewerProps) {
     () => summarizeDiffFiles(classifiedFiles),
     [classifiedFiles],
   )
-  const visibleFiles = useMemo(
-    () => filterAndOrderDiffFiles(classifiedFiles, categoryFilter, fileOrder),
+  const filteredFiles = useMemo(
+    () =>
+      filterAndOrderDiffFiles(
+        classifiedFiles,
+        categoryFilter,
+        fileOrder === 'tree' ? 'patch' : fileOrder,
+      ),
     [categoryFilter, classifiedFiles, fileOrder],
   )
   const filesById = useMemo(
     () => new Map(classifiedFiles.map((file) => [file.id, file])),
     [classifiedFiles],
+  )
+  const filePickerEntries = useMemo(
+    () =>
+      orderDiffFilePickerEntries(
+        createDiffFilePickerEntries(
+          filteredFiles.map((file) => ({
+            itemId: file.id,
+            name: file.file.name,
+            type: file.file.type,
+            category: file.category,
+            additions: file.additions,
+            deletions: file.deletions,
+            viewed: viewedFileIds.has(file.storageId),
+          })),
+        ),
+      ),
+    [viewedFileIds, filteredFiles],
+  )
+  const visibleFiles = useMemo(
+    () =>
+      fileOrder === 'tree'
+        ? filePickerEntries.map((entry) => filesById.get(entry.itemId)!)
+        : filteredFiles,
+    [fileOrder, filePickerEntries, filesById, filteredFiles],
   )
   const viewedFileCount = useMemo(
     () =>
@@ -432,21 +464,6 @@ export default function DiffViewer(props: DiffViewerProps) {
         }
       }),
     [expandedOverrides, reviewAnnotations, viewedFileIds, visibleFiles],
-  )
-  const filePickerEntries = useMemo(
-    () =>
-      createDiffFilePickerEntries(
-        visibleFiles.map((file) => ({
-          itemId: file.id,
-          name: file.file.name,
-          type: file.file.type,
-          category: file.category,
-          additions: file.additions,
-          deletions: file.deletions,
-          viewed: viewedFileIds.has(file.storageId),
-        })),
-      ),
-    [viewedFileIds, visibleFiles],
   )
   const renderHeaderPrefix = useCallback(
     (item: CodeViewItem<ReviewCommentMetadata>) => {
@@ -1581,8 +1598,8 @@ function ViewOptionsControl({
   wrapLines,
   onWrapLinesChange,
 }: {
-  order: DiffFileOrder
-  onOrderChange: (order: DiffFileOrder) => void
+  order: DiffFileOrder | 'tree'
+  onOrderChange: (order: DiffFileOrder | 'tree') => void
   diffStyle: DiffStyle
   onDiffStyleChange: (style: DiffStyle) => void
   splitViewAvailable: boolean
@@ -1605,6 +1622,11 @@ function ViewOptionsControl({
           label="File order"
           value={order}
           options={[
+            {
+              value: 'tree',
+              label: 'File tree',
+              title: 'Match the file tree: folders first, then filenames',
+            },
             {
               value: 'patch',
               label: 'Patch',
