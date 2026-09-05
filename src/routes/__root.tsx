@@ -40,7 +40,7 @@ export const Route = createRootRoute({
       },
       {
         rel: 'icon',
-        href: '/favicon.svg',
+        href: '/favicon.svg?v=slash',
         type: 'image/svg+xml',
       },
       {

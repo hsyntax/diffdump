@@ -1,15 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <style>
-    .accent { fill: #18181b }
-    .neutral { fill: #52525b }
-    .mark { stroke: #fff }
+    .mark {
+      stroke: #243653;
+    }
     @media (prefers-color-scheme: dark) {
-      .accent { fill: #fafafa }
-      .neutral { fill: #d4d4d8 }
-      .mark { stroke: #18181b }
+      .mark {
+        stroke: #e5edff;
+      }
     }
   </style>
-  <rect class="accent" width="32" height="32" rx="9"/>
-  <path class="neutral" d="M22 0h1a9 9 0 0 1 9 9v14a9 9 0 0 1-9 9H10Z"/>
-  <line class="mark" x1="13" y1="25" x2="19" y2="7" stroke-width="4" stroke-linecap="round"/>
+  <line
+    class="mark"
+    x1="13"
+    y1="25"
+    x2="19"
+    y2="7"
+    stroke-width="4"
+    stroke-linecap="round"
+  />
 </svg>

@@ -94,9 +94,8 @@
   --danger: light-dark(#b91c1c, #f87171);
   --addition: light-dark(#15803d, #4ade80);
   --deletion: light-dark(#b91c1c, #f87171);
-  --logo-accent: light-dark(#18181b, #fafafa);
-  --logo-neutral: light-dark(#52525b, #d4d4d8);
-  --logo-mark: light-dark(#ffffff, #18181b);
+  /* The slash sits on a transparent background and follows the theme. */
+  --logo-mark: light-dark(#243653, #e5edff);
   --radius-control: 8px;
   --radius-panel: 12px;
   --shadow-subtle: light-dark(
@@ -141,9 +140,6 @@
   --secondary: var(--surface-raised);
   --secondary-strong: light-dark(#e5e4df, #3c3b34);
   --secondary-foreground: var(--text);
-  --logo-accent: #0a5cff;
-  --logo-neutral: #084dd6;
-  --logo-mark: #ffffff;
 }
 
 .marketing-site {
