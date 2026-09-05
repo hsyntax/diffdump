@@ -25,12 +25,12 @@ export const Route = createRootRoute({
       {
         name: 'theme-color',
         media: '(prefers-color-scheme: light)',
-        content: '#f7f7f8',
+        content: '#f5f5f5',
       },
       {
         name: 'theme-color',
         media: '(prefers-color-scheme: dark)',
-        content: '#09090b',
+        content: '#171717',
       },
     ],
     links: [

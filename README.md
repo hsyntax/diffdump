@@ -91,6 +91,9 @@ It is hosted at [diffdump.com](https://diffdump.com).
 - Multi-file, syntax-highlighted patch rendering via
   [`@pierre/diffs`](https://diffs.com/), with unified and split layouts and
   optional line wrapping.
+- Pierre Light and Pierre Dark palettes, with their complete Shiki syntax
+  themes copied from Pierre's shared theme package. Source and license details
+  are in [the vendored themes](src/lib/themes/pierre/README.md).
 - A searchable file tree ([`@pierre/trees`](https://trees.software)) with
   per-file git status for jumping between changed files.
 - Files are automatically categorized as Source, Tests, Docs, or Other — the
