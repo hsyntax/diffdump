@@ -9,9 +9,13 @@ import {
 } from 'react'
 import type { CodeViewLineSelection } from '@pierre/diffs'
 import type { CodeViewHandle } from '@pierre/diffs/react'
+import { IconArrow, IconX } from '@pierre/icons'
 
 import { IconButton } from './ui/button'
+import { Input } from './ui/input'
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import type { ClassifiedDiffFile } from '../lib/diff-files'
+import { isDiffFindShortcut } from '../lib/diff-find-shortcut'
 import {
   buildSearchCorpus,
   searchDiffCorpus,
@@ -22,6 +26,7 @@ import type { ReviewCommentMetadata } from '../lib/review-comments'
 type DiffFindBarProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
+  returnFocusRef: RefObject<HTMLElement | null>
   visibleFiles: readonly ClassifiedDiffFile[]
   codeViewRef: RefObject<CodeViewHandle<ReviewCommentMetadata> | null>
   /* The viewer controls line selection, so match highlights flow through its
@@ -40,6 +45,7 @@ type ExecutedSearch = {
 export default function DiffFindBar({
   open,
   onOpenChange,
+  returnFocusRef,
   visibleFiles,
   codeViewRef,
   onSelectLines,
@@ -74,32 +80,37 @@ export default function DiffFindBar({
   }, [onSelectLines, open])
 
   useEffect(() => {
-    function handleFindShortcut(event: KeyboardEvent) {
-      if (
-        (event.metaKey || event.ctrlKey) &&
-        !event.altKey &&
-        !event.shiftKey &&
-        event.key.toLowerCase() === 'f'
-      ) {
-        /* Native find silently misses everything the virtualized CodeView
-           has not rendered, so take the shortcut over. */
-        event.preventDefault()
-        onOpenChange(true)
-        inputRef.current?.focus()
-        inputRef.current?.select()
-      }
-    }
+    if (!open) return
 
-    window.addEventListener('keydown', handleFindShortcut)
-    return () => window.removeEventListener('keydown', handleFindShortcut)
-  }, [onOpenChange])
-
-  useEffect(() => {
-    if (open) {
+    function focusSearch() {
       inputRef.current?.focus()
       inputRef.current?.select()
     }
+
+    function handleFindShortcut(event: KeyboardEvent) {
+      if (isDiffFindShortcut(event)) {
+        event.preventDefault()
+        focusSearch()
+      }
+    }
+
+    focusSearch()
+    // The viewer opens the lazy-loaded bar; subsequent shortcuts refocus it.
+    window.addEventListener('keydown', handleFindShortcut)
+    return () => window.removeEventListener('keydown', handleFindShortcut)
   }, [open])
+
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    const returnFocusElement = returnFocusRef.current
+
+    return () => {
+      returnFocusElement?.focus({ preventScroll: true })
+    }
+  }, [open, returnFocusRef])
 
   useEffect(() => {
     if (!open) {
@@ -203,56 +214,80 @@ export default function DiffFindBar({
       aria-label="Find in diff"
       className="absolute left-3 right-3 top-3 z-30 flex items-center gap-1 rounded-control border border-line-bright bg-panel p-1 shadow-float focus-within:outline-2 focus-within:-outline-offset-1 focus-within:outline-solid focus-within:outline-accent-text sm:left-auto md:right-4"
     >
-      <input
+      <Input
         ref={inputRef}
-        className="h-8 min-w-0 flex-1 bg-transparent px-2 font-mono text-xs text-foreground outline-none placeholder:text-muted/70 sm:h-7 sm:w-52 sm:flex-none"
+        className="h-8 flex-1 border-0 bg-transparent px-2 font-mono focus-visible:ring-0 focus-visible:ring-offset-0 sm:h-7 sm:w-52 sm:flex-none"
         type="text"
         value={inputValue}
         placeholder="Find in diff"
-        title="Searches the visible files. Enter for next match, Shift+Enter for previous."
+        aria-label="Find in diff"
+        aria-describedby="diff-find-instructions"
         autoCapitalize="off"
         autoCorrect="off"
         spellCheck={false}
         onChange={(event) => setInputValue(event.currentTarget.value)}
         onKeyDown={handleInputKeyDown}
       />
-      <span
-        className="min-w-14 px-1 text-right font-mono text-[11px] text-muted tabular-nums"
-        aria-live="polite"
+      <span id="diff-find-instructions" className="sr-only">
+        Searches the visible files. Enter for next match, Shift+Enter for
+        previous.
+      </span>
+      <output
+        className="min-w-14 px-1 text-right font-mono text-[11px] text-muted-foreground tabular-nums"
+        aria-atomic="true"
       >
         {search ? formatMatchCounter(search) : ''}
-      </span>
-      <IconButton
-        className="max-sm:size-8"
-        label="Previous match"
-        variant="ghost"
-        size="xs"
-        disabled={inputValue === ''}
-        onClick={() => submit(-1)}
-      >
-        <span aria-hidden="true">↑</span>
-      </IconButton>
-      <IconButton
-        className="max-sm:size-8"
-        label="Next match"
-        variant="ghost"
-        size="xs"
-        disabled={inputValue === ''}
-        onClick={() => submit(1)}
-      >
-        <span aria-hidden="true">↓</span>
-      </IconButton>
-      <IconButton
-        className="max-sm:size-8"
-        label="Close find bar"
-        variant="ghost"
-        size="xs"
-        onClick={() => onOpenChange(false)}
-      >
-        <span className="text-lg leading-none" aria-hidden="true">
-          ×
-        </span>
-      </IconButton>
+      </output>
+      <Tooltip disabled={inputValue === ''}>
+        <TooltipTrigger
+          render={
+            <IconButton
+              className="max-sm:size-8"
+              label="Previous match"
+              variant="ghost"
+              size="xs"
+              disabled={inputValue === ''}
+              onClick={() => submit(-1)}
+            />
+          }
+        >
+          <IconArrow className="rotate-90" aria-hidden="true" />
+        </TooltipTrigger>
+        <TooltipContent>Previous match</TooltipContent>
+      </Tooltip>
+      <Tooltip disabled={inputValue === ''}>
+        <TooltipTrigger
+          render={
+            <IconButton
+              className="max-sm:size-8"
+              label="Next match"
+              variant="ghost"
+              size="xs"
+              disabled={inputValue === ''}
+              onClick={() => submit(1)}
+            />
+          }
+        >
+          <IconArrow className="-rotate-90" aria-hidden="true" />
+        </TooltipTrigger>
+        <TooltipContent>Next match</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <IconButton
+              className="max-sm:size-8"
+              label="Close find bar"
+              variant="ghost"
+              size="xs"
+              onClick={() => onOpenChange(false)}
+            />
+          }
+        >
+          <IconX aria-hidden="true" />
+        </TooltipTrigger>
+        <TooltipContent>Close find bar</TooltipContent>
+      </Tooltip>
     </search>
   )
 }

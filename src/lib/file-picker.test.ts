@@ -4,6 +4,7 @@ import { FileTree } from '@pierre/trees'
 import {
   createDiffFilePickerEntries,
   prepareDiffFileTreeInput,
+  summarizeDiffFilePickerFolders,
 } from './file-picker'
 
 describe('diff file picker entries', () => {
@@ -151,6 +152,52 @@ describe('diff file picker entries', () => {
         deletions: 1,
         viewed: true,
       },
+    ])
+  })
+
+  it('summarizes changed files and line counts for every ancestor folder', () => {
+    const entries = createDiffFilePickerEntries([
+      {
+        itemId: 'one',
+        name: 'src/components/button.tsx',
+        type: 'change',
+        category: 'source',
+        additions: 8,
+        deletions: 3,
+        viewed: false,
+      },
+      {
+        itemId: 'two',
+        name: 'src/components/input.tsx',
+        type: 'new',
+        category: 'source',
+        additions: 5,
+        deletions: 0,
+        viewed: false,
+      },
+      {
+        itemId: 'three',
+        name: 'src/index.ts',
+        type: 'change',
+        category: 'source',
+        additions: 2,
+        deletions: 1,
+        viewed: false,
+      },
+      {
+        itemId: 'root',
+        name: 'README.md',
+        type: 'change',
+        category: 'docs',
+        additions: 20,
+        deletions: 10,
+        viewed: false,
+      },
+    ])
+
+    expect([...summarizeDiffFilePickerFolders(entries)]).toEqual([
+      ['src/components/', { files: 2, additions: 13, deletions: 3 }],
+      ['src/', { files: 3, additions: 15, deletions: 4 }],
     ])
   })
 })

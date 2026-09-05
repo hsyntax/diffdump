@@ -20,7 +20,7 @@ export function SiteHeader() {
 
       <div className="flex items-center gap-1.5">
         <Link
-          className="rounded-control px-2.5 py-1.5 text-xs text-muted transition-colors hover:bg-surface-raised hover:text-foreground"
+          className="rounded-control px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground"
           activeOptions={{ exact: false }}
           activeProps={{
             className:
@@ -39,7 +39,7 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer className="flex flex-col gap-4 border-t border-line px-1 pt-6 text-[11px] text-muted md:flex-row md:items-center md:justify-between">
+    <footer className="flex flex-col gap-4 border-t border-line px-1 pt-6 text-[11px] text-muted-foreground md:flex-row md:items-center md:justify-between">
       <nav
         className="flex flex-wrap items-center gap-x-4 gap-y-2"
         aria-label="Documentation"
