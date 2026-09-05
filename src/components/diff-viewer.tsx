@@ -241,7 +241,8 @@ export default function DiffViewer(props: DiffViewerProps) {
   const [copied, setCopied] = useState(false)
   const [filePickerOpen, setFilePickerOpen] = useState(false)
   const [findBarOpen, setFindBarOpen] = useState(false)
-  const codeViewRef = useRef<CodeViewHandle<ReviewCommentMetadata>>(null)
+  const codeViewRef =
+    useRef<CodeViewHandle<ReviewCommentMetadata, undefined>>(null)
   const findTriggerRef = useRef<HTMLButtonElement>(null)
   const mainRef = useRef<HTMLElement>(null)
   const [viewedState, setViewedState] = useState(() => ({
@@ -264,7 +265,10 @@ export default function DiffViewer(props: DiffViewerProps) {
   const drafts =
     draftsState.reviewKey === reviewKey ? draftsState.drafts : EMPTY_DRAFTS
   const [composer, setComposer] = useState<DraftReviewComment | null>(null)
-  const draftDeletionDialog = useMemo(createDraftDeletionDialogHandle, [])
+  const draftDeletionDialog = useMemo(
+    () => createDraftDeletionDialogHandle(),
+    [],
+  )
   const composerRef = useRef<DraftReviewComposerHandle>(null)
   /* The composer unmounts (taking its React state with it) whenever its
      diff item leaves the virtualization window; the text it has typed so
@@ -855,7 +859,7 @@ export default function DiffViewer(props: DiffViewerProps) {
     setExpansionStates(EMPTY_EXPANSION_STATES)
   }, [trackedLoadDiffFiles])
 
-  const options = useMemo<CodeViewOptions<ReviewCommentMetadata>>(
+  const options = useMemo<CodeViewOptions<ReviewCommentMetadata, undefined>>(
     () => ({
       diffStyle,
       diffIndicators: 'bars' as const,

@@ -168,7 +168,9 @@ client IPs are not included in the custom log entry.
 
 ## Local development
 
-Requirements: Node.js 22 or newer and a Cloudflare account for deployment.
+Requirements: Node.js 22.22.2+, 24.15.0+, or 26+ (matching `package.json`'s
+engine range), and a Cloudflare account for deployment. Corepack uses the
+project's pinned pnpm version.
 
 ```bash
 pnpm install

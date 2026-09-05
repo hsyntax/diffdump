@@ -28,7 +28,10 @@ type DiffFindBarProps = {
   onOpenChange: (open: boolean) => void
   returnFocusRef: RefObject<HTMLElement | null>
   visibleFiles: readonly ClassifiedDiffFile[]
-  codeViewRef: RefObject<CodeViewHandle<ReviewCommentMetadata> | null>
+  codeViewRef: RefObject<CodeViewHandle<
+    ReviewCommentMetadata,
+    undefined
+  > | null>
   /* The viewer controls line selection, so match highlights flow through its
      state instead of the imperative handle. */
   onSelectLines: (selection: CodeViewLineSelection | null) => void

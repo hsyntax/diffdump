@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // Preserve existing effect synchronization and imperative viewer integration
+  // during this dependency upgrade. New files retain the new React checks.
+  "overrides": [
+    {
+      "files": [
+        "src/components/github-open-panel.tsx",
+        "src/components/diff-find-bar.tsx",
+        "src/components/ui/theme-toggle.tsx",
+        "src/components/github-diff-page.tsx",
+        "src/components/diff-viewer.tsx",
+        "src/routes/index.tsx",
+        "src/routes/view.$slug.tsx"
+      ],
+      "rules": { "react/set-state-in-effect": "off" }
+    },
+    {
+      "files": ["src/components/diff-viewer.tsx"],
+      // The annotation epoch cache is deliberately maintained across renders.
+      "rules": { "react/refs": "off" }
+    },
+    {
+      "files": ["src/components/draft-review-annotation.tsx"],
+      // This mutable body store preserves drafts across virtualized unmounts.
+      "rules": { "react/immutability": "off" }
+    }
+  ]
+}

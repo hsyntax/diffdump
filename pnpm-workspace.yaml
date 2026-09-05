@@ -1,3 +1,16 @@
 packages:
   - '.'
   - '!repos/**'
+
+allowBuilds:
+  esbuild: true
+  lightningcss: true
+  sharp: true
+  workerd: true
+
+minimumReleaseAgeExclude:
+  - '@pierre/diffs@1.4.1'
+
+# Trees pins the older theming patch, whose peer range excludes theme 2.
+overrides:
+  '@pierre/trees>@pierre/theming': 1.0.1

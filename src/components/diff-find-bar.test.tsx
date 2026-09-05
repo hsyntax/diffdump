@@ -61,9 +61,10 @@ describe('DiffFindBar', () => {
     function FindHarness() {
       const [open, setOpen] = useState(false)
       const triggerRef = useRef<HTMLButtonElement>(null)
-      const codeViewRef = useRef<CodeViewHandle<ReviewCommentMetadata> | null>(
-        null,
-      )
+      const codeViewRef = useRef<CodeViewHandle<
+        ReviewCommentMetadata,
+        undefined
+      > | null>(null)
 
       return (
         <>
