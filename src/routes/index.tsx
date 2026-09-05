@@ -32,19 +32,19 @@ const reviewCapabilities = [
     label: 'Complete review flow',
     title: 'Everything in one review',
     description:
-      'Comment on lines, submit one review, and approve or request changes directly on the pull request.',
+      'Leave inline comments, approve a pull request, or request changes in one place.',
   },
   {
     label: 'Agent-friendly structure',
     title: 'See the shape of the change',
     description:
-      'Source, tests, docs, and other files are categorized automatically, making agent-generated code easier to review.',
+      'Files are grouped into source, tests, and docs so large, agent-generated changes are easier to review.',
   },
   {
     label: 'Stack-aware',
     title: 'Move through stacked PRs',
     description:
-      'See the ultimate base and every pull request layer, then move through the stack without losing your place.',
+      'Review each pull request in a stack, from the base branch to the latest change, without losing your place.',
   },
 ] as const
 
@@ -174,18 +174,17 @@ function Home() {
   }
 
   return (
-    <main className="mx-auto min-h-screen w-[min(1120px,calc(100%-32px))] pt-5 pb-6 text-foreground md:pt-7">
+    <main className="marketing-site mx-auto min-h-screen w-[min(1120px,calc(100%-32px))] pt-5 pb-6 text-foreground md:pt-7">
       <SiteHeader />
 
       <section className="pt-16 pb-10 md:pt-24 md:pb-12">
         <h1 className="max-w-[1050px] text-[clamp(42px,13vw,64px)] font-[560] leading-[0.98] tracking-[-0.04em] md:text-[clamp(52px,7vw,88px)]">
-          Review your diffs.
+          Review your <span className="text-accent-text">diffs.</span>
         </h1>
         <p className="mt-6 max-w-[680px] text-base leading-relaxed text-muted-bright md:mt-8 md:text-lg">
-          Open a GitHub pull request, commit, comparison, or raw patch in one
-          focused view. Diffdump categorizes large, agent-generated changes,
-          supports stacked PRs, and adds inline comments and approvals when
-          you’re reviewing on GitHub.
+          Review GitHub pull requests with files grouped by type, inline
+          comments, and approvals. Follow stacked PRs, or share a raw Git diff
+          with a link.
         </p>
       </section>
 
@@ -202,17 +201,17 @@ function Home() {
               key={capability.label}
               className="border-b border-line px-1 py-5 last:border-b-0 md:border-b-0 md:px-6 md:py-6 md:first:pl-1 md:last:pr-1"
             >
-              <div className="flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              <div className="flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground">
                 <span className="text-accent-text">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <span aria-hidden="true" className="h-px w-5 bg-line-bright" />
                 {capability.label}
               </div>
-              <h3 className="mt-3 text-base font-medium tracking-[-0.02em]">
+              <h3 className="mt-3 text-lg font-semibold tracking-[-0.02em]">
                 {capability.title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-2 text-[15px] leading-relaxed text-muted-bright">
                 {capability.description}
               </p>
             </article>
@@ -236,7 +235,7 @@ function Home() {
               ? 'Review a GitHub diff'
               : 'Create a shared diff'}
           </h2>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {activeTab === 'github'
               ? 'Public repos work instantly — private ones ask for a token when needed.'
               : 'Paste or pipe a patch to create an expiring, unlisted link.'}
@@ -260,13 +259,13 @@ function Home() {
                 activateOnFocus
               >
                 <TabsTrigger
-                  className="-mb-px border-b-2 border-transparent px-3.5 transition-colors hover:text-foreground data-active:border-primary data-active:text-foreground"
+                  className="-mb-px border-b-2 border-transparent px-3.5 transition-colors hover:text-foreground data-active:border-primary data-active:text-accent-text"
                   value="github"
                 >
                   github.com/…
                 </TabsTrigger>
                 <TabsTrigger
-                  className="-mb-px border-b-2 border-transparent px-3.5 transition-colors hover:text-foreground data-active:border-primary data-active:text-foreground"
+                  className="-mb-px border-b-2 border-transparent px-3.5 transition-colors hover:text-foreground data-active:border-primary data-active:text-accent-text"
                   value="paste"
                 >
                   diff.patch

@@ -25,7 +25,7 @@ export function GuidePage({
   title,
 }: GuidePageProps) {
   return (
-    <main className="mx-auto min-h-screen w-[min(1120px,calc(100%-32px))] pt-5 pb-8 text-foreground md:pt-7">
+    <main className="marketing-site mx-auto min-h-screen w-[min(1120px,calc(100%-32px))] pt-5 pb-8 text-foreground md:pt-7">
       <SiteHeader />
 
       <article className="mx-auto max-w-[820px] pt-14 md:pt-20">

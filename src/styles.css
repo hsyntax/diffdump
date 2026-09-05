@@ -121,6 +121,44 @@
   color-scheme: dark;
 }
 
+/* Marketing and documentation use Dotpipe's warm neutrals and Electric
+   accent. Keep these tokens on the root so page gutters and portaled
+   controls share the palette, while review routes retain their own theme. */
+:root:has(.marketing-site) {
+  --canvas: light-dark(#fdfdfc, #171714);
+  --panel: light-dark(#ffffff, #21201c);
+  --surface: var(--panel);
+  --surface-raised: light-dark(#f4f3f0, #2b2a25);
+  --line: light-dark(#e5e4df, #3c3b34);
+  --line-bright: light-dark(#cbc9c0, #5c5b52);
+  --text: light-dark(#21201c, #fdfdfc);
+  --muted-foreground: light-dark(#63635e, #b8b7ae);
+  --muted-bright: light-dark(#484841, #deddd5);
+  --accent-text: light-dark(#0a5cff, #8bb3ff);
+  --primary: light-dark(#0a5cff, #8bb3ff);
+  --primary-strong: light-dark(#084dd6, #b0ccff);
+  --primary-foreground: light-dark(#ffffff, #171714);
+  --secondary: var(--surface-raised);
+  --secondary-strong: light-dark(#e5e4df, #3c3b34);
+  --secondary-foreground: var(--text);
+  --logo-accent: #0a5cff;
+  --logo-neutral: #084dd6;
+  --logo-mark: #ffffff;
+}
+
+.marketing-site {
+  text-rendering: optimizeLegibility;
+}
+
+.marketing-site :is(h1, h2, h3, p) {
+  text-wrap: pretty;
+}
+
+.marketing-site ::selection {
+  color: #21201c;
+  background: #dce8ff;
+}
+
 * {
   box-sizing: border-box;
 }
