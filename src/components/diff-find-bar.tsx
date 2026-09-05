@@ -15,6 +15,7 @@ import { IconButton } from './ui/button'
 import { Input } from './ui/input'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import type { ClassifiedDiffFile } from '../lib/diff-files'
+import { isDiffFindShortcut } from '../lib/diff-find-shortcut'
 import {
   buildSearchCorpus,
   searchDiffCorpus,
@@ -79,10 +80,24 @@ export default function DiffFindBar({
   }, [onSelectLines, open])
 
   useEffect(() => {
-    if (open) {
+    if (!open) return
+
+    function focusSearch() {
       inputRef.current?.focus()
       inputRef.current?.select()
     }
+
+    function handleFindShortcut(event: KeyboardEvent) {
+      if (isDiffFindShortcut(event)) {
+        event.preventDefault()
+        focusSearch()
+      }
+    }
+
+    focusSearch()
+    // The viewer opens the lazy-loaded bar; subsequent shortcuts refocus it.
+    window.addEventListener('keydown', handleFindShortcut)
+    return () => window.removeEventListener('keydown', handleFindShortcut)
   }, [open])
 
   useEffect(() => {

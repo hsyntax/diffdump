@@ -55,6 +55,10 @@ describe('primary control accessibility smoke', () => {
   it('has no detectable semantic violations in the review form', async () => {
     const { container } = render(
       <SubmitReviewPanel
+        event="COMMENT"
+        body=""
+        onEventChange={() => undefined}
+        onBodyChange={() => undefined}
         draftCount={1}
         submitState={{ phase: 'idle' }}
         reviewUrl={null}

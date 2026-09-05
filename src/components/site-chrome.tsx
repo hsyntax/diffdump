@@ -20,7 +20,7 @@ export function SiteHeader() {
 
       <div className="flex items-center gap-1.5">
         <Link
-          className="rounded-control px-2.5 py-1.5 text-xs text-muted transition-colors hover:bg-surface-raised hover:text-foreground"
+          className="rounded-control px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground"
           activeOptions={{ exact: false }}
           activeProps={{
             className:

@@ -18,6 +18,40 @@ vi.mock('@pierre/icons', () => ({
 afterEach(cleanup)
 
 describe('DiffFindBar', () => {
+  it.each(['Meta', 'Control'])(
+    'refocuses and selects the query on repeated %s+F',
+    async (modifier) => {
+      const user = userEvent.setup()
+      render(
+        <DiffFindBar
+          open
+          onOpenChange={vi.fn<(open: boolean) => void>()}
+          returnFocusRef={{ current: null }}
+          visibleFiles={[]}
+          codeViewRef={{ current: null }}
+          onSelectLines={vi.fn<
+            (selection: CodeViewLineSelection | null) => void
+          >()}
+          onRevealFile={vi.fn<(storageId: string) => void>()}
+        />,
+      )
+      const input = screen.getByRole('textbox', {
+        name: 'Find in diff',
+      }) as HTMLInputElement
+      await user.type(input, 'router')
+      await user.click(screen.getByRole('button', { name: 'Next match' }))
+      expect(document.activeElement).not.toBe(input)
+
+      await user.keyboard(`{${modifier}>}f{/${modifier}}`)
+
+      expect(document.activeElement).toBe(input)
+      expect(input.selectionStart).toBe(0)
+      expect(input.selectionEnd).toBe('router'.length)
+      await user.keyboard('loader')
+      expect(input.value).toBe('loader')
+    },
+  )
+
   it('has a concise accessible name and restores trigger focus on Escape', async () => {
     const user = userEvent.setup()
     const onSelectLines =

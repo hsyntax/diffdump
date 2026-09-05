@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { IconArrowUpRight, IconCheck } from '@pierre/icons'
 
 import { Button } from './ui/button'
@@ -31,6 +31,10 @@ const REVIEW_EVENTS: ReadonlyArray<{
 ]
 
 export default function SubmitReviewPanel({
+  event,
+  body,
+  onEventChange,
+  onBodyChange,
   draftCount,
   submitState,
   reviewUrl,
@@ -39,6 +43,10 @@ export default function SubmitReviewPanel({
   onReloadDiff,
   onClose,
 }: {
+  event: GitHubReviewEvent
+  body: string
+  onEventChange: (event: GitHubReviewEvent) => void
+  onBodyChange: (body: string) => void
   draftCount: number
   submitState: SubmitReviewState
   /** GitHub URL of the published review once submission succeeds. */
@@ -49,8 +57,6 @@ export default function SubmitReviewPanel({
   onReloadDiff: () => void
   onClose: () => void
 }) {
-  const [event, setEvent] = useState<GitHubReviewEvent>('COMMENT')
-  const [body, setBody] = useState('')
   const summaryRef = useRef<HTMLTextAreaElement>(null)
   const reviewEventId = useId()
   const submitting = submitState.phase === 'submitting'
@@ -98,7 +104,9 @@ export default function SubmitReviewPanel({
         placeholder="Review summary (optional)"
         aria-label="Review summary"
         disabled={controlsDisabled}
-        onChange={(changeEvent) => setBody(changeEvent.currentTarget.value)}
+        onChange={(changeEvent) =>
+          onBodyChange(changeEvent.currentTarget.value)
+        }
       />
 
       <RadioGroup
@@ -107,7 +115,7 @@ export default function SubmitReviewPanel({
         name="review-event"
         value={event}
         disabled={controlsDisabled}
-        onValueChange={setEvent}
+        onValueChange={onEventChange}
       >
         {REVIEW_EVENTS.map((option) => {
           const optionId = `${reviewEventId}-${option.event.toLowerCase()}`

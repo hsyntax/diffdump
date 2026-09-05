@@ -1,10 +1,12 @@
 // @vitest-environment happy-dom
 
-import { cleanup, render, screen } from '@testing-library/react'
+import { useState, type ComponentProps } from 'react'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import SubmitReviewPanel from './submit-review-panel'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import type { GitHubReviewEvent } from '../lib/review-comments'
 
 vi.mock('@pierre/icons', () => ({
@@ -24,12 +26,46 @@ const defaultProps = {
   onClose: vi.fn<() => void>(),
 }
 
+function ReviewHarness({
+  inPopover = false,
+  ...props
+}: Partial<ComponentProps<typeof SubmitReviewPanel>> & {
+  inPopover?: boolean
+}) {
+  const [event, setEvent] = useState<GitHubReviewEvent>('COMMENT')
+  const [body, setBody] = useState('')
+  const [open, setOpen] = useState(false)
+  const panel = (
+    <SubmitReviewPanel
+      {...defaultProps}
+      event={event}
+      body={body}
+      onEventChange={setEvent}
+      onBodyChange={setBody}
+      onClose={() => setOpen(false)}
+      {...props}
+    />
+  )
+
+  return inPopover ? (
+    <>
+      <button type="button">Comments</button>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger>Review</PopoverTrigger>
+        <PopoverContent aria-label="Review controls">{panel}</PopoverContent>
+      </Popover>
+    </>
+  ) : (
+    panel
+  )
+}
+
 describe('SubmitReviewPanel', () => {
   it('changes the checked review type with arrow keys and submits it', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn<(event: GitHubReviewEvent, body: string) => void>()
 
-    render(<SubmitReviewPanel {...defaultProps} onSubmit={onSubmit} />)
+    render(<ReviewHarness onSubmit={onSubmit} />)
 
     const comment = screen.getByRole('radio', { name: 'Comment' })
     const approve = screen.getByRole('radio', { name: 'Approve' })
@@ -52,12 +88,7 @@ describe('SubmitReviewPanel', () => {
   })
 
   it('disables review controls while submission is in progress', () => {
-    render(
-      <SubmitReviewPanel
-        {...defaultProps}
-        submitState={{ phase: 'submitting' }}
-      />,
-    )
+    render(<ReviewHarness submitState={{ phase: 'submitting' }} />)
 
     const summary = screen.getByRole('textbox', { name: 'Review summary' })
     const comment = screen.getByRole('radio', { name: 'Comment' })
@@ -67,4 +98,57 @@ describe('SubmitReviewPanel', () => {
     expect(comment.getAttribute('aria-disabled')).toBe('true')
     expect((submit as HTMLButtonElement).disabled).toBe(true)
   })
+
+  it.each(['outside click', 'Escape', 'Close'])(
+    'preserves the summary and review type after dismissal by %s',
+    async (dismissal) => {
+      const user = userEvent.setup()
+      const onSubmit = vi.fn<(event: GitHubReviewEvent, body: string) => void>()
+      render(<ReviewHarness inPopover onSubmit={onSubmit} />)
+
+      const trigger = screen.getByRole('button', {
+        name: 'Review',
+      })
+      await user.click(trigger)
+      await user.type(
+        screen.getByRole('textbox', { name: 'Review summary' }),
+        'Please handle the empty result',
+      )
+      await user.click(screen.getByRole('radio', { name: 'Request changes' }))
+
+      if (dismissal === 'Escape') {
+        await user.keyboard('{Escape}')
+      } else {
+        await user.click(
+          screen.getByRole('button', {
+            name: dismissal === 'Close' ? 'Close' : 'Comments',
+          }),
+        )
+      }
+      await waitFor(() => {
+        expect(
+          screen.queryByRole('textbox', { name: 'Review summary' }),
+        ).toBeNull()
+      })
+
+      await user.click(trigger)
+      expect(
+        (
+          screen.getByRole('textbox', {
+            name: 'Review summary',
+          }) as HTMLTextAreaElement
+        ).value,
+      ).toBe('Please handle the empty result')
+      expect(
+        screen
+          .getByRole('radio', { name: 'Request changes' })
+          .getAttribute('aria-checked'),
+      ).toBe('true')
+      await user.click(screen.getByRole('button', { name: 'Submit review' }))
+      expect(onSubmit).toHaveBeenCalledWith(
+        'REQUEST_CHANGES',
+        'Please handle the empty result',
+      )
+    },
+  )
 })

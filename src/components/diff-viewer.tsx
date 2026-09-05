@@ -279,6 +279,9 @@ export default function DiffViewer(props: DiffViewerProps) {
   }, [])
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('files')
   const [submitPanelOpen, setSubmitPanelOpen] = useState(false)
+  // Keep unsent review text and its type when the popover unmounts on dismissal.
+  const [reviewEvent, setReviewEvent] = useState<GitHubReviewEvent>('COMMENT')
+  const [reviewBody, setReviewBody] = useState('')
   const [submitState, setSubmitState] = useState<SubmitReviewState>({
     phase: 'idle',
   })
@@ -732,6 +735,8 @@ export default function DiffViewer(props: DiffViewerProps) {
         setComposer(null)
         setSelectedLines(null)
         setSubmitState({ phase: 'success', reviewId: publishedReviewId })
+        setReviewEvent('COMMENT')
+        setReviewBody('')
         onReloadComments?.()
       } catch (error) {
         setSubmitState(toSubmitErrorState(error))
@@ -923,6 +928,8 @@ export default function DiffViewer(props: DiffViewerProps) {
     setSelectedLines(null)
     setSubmitState({ phase: 'idle' })
     setSubmitPanelOpen(false)
+    setReviewEvent('COMMENT')
+    setReviewBody('')
     setSidebarTab('files')
   }, [reviewKey, reviewTarget])
 
@@ -1216,6 +1223,10 @@ export default function DiffViewer(props: DiffViewerProps) {
                   >
                     <Suspense fallback={<ReviewPanelLoading />}>
                       <SubmitReviewPanel
+                        event={reviewEvent}
+                        body={reviewBody}
+                        onEventChange={setReviewEvent}
+                        onBodyChange={setReviewBody}
                         draftCount={drafts.length}
                         submitState={submitState}
                         reviewUrl={

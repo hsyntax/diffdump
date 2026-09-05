@@ -202,7 +202,7 @@ function Home() {
               key={capability.label}
               className="border-b border-line px-1 py-5 last:border-b-0 md:border-b-0 md:px-6 md:py-6 md:first:pl-1 md:last:pr-1"
             >
-              <div className="flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
+              <div className="flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
                 <span className="text-accent-text">
                   {String(index + 1).padStart(2, '0')}
                 </span>
@@ -212,7 +212,7 @@ function Home() {
               <h3 className="mt-3 text-base font-medium tracking-[-0.02em]">
                 {capability.title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {capability.description}
               </p>
             </article>
