@@ -136,6 +136,10 @@ import {
   readStoredViewedFileIds,
   writeStoredViewedFileIds,
 } from '../lib/viewed-files'
+import {
+  readStoredViewSettings,
+  writeStoredViewSettings,
+} from '../lib/view-settings'
 
 const DiffFilePicker = lazy(() => import('./diff-file-picker'))
 const DiffFindBar = lazy(() => import('./diff-find-bar'))
@@ -232,14 +236,14 @@ export default function DiffViewer(props: DiffViewerProps) {
     : IDLE_REVIEW_COMMENTS
   const onReloadComments = isGitHubDiff ? props.onReloadComments : undefined
   const onReloadDiff = isGitHubDiff ? props.onReloadDiff : undefined
-  const [preferredDiffStyle, setPreferredDiffStyle] =
-    useState<DiffStyle>('unified')
+  // The viewer mounts only on the client, so saved settings can be read before
+  // its first render. Keep the preferred layout when a narrow canvas forces unified.
+  const [viewSettings, setViewSettings] = useState(readStoredViewSettings)
+  const { diffStyle: preferredDiffStyle, wrapLines, fileOrder } = viewSettings
   const [splitViewAvailable, setSplitViewAvailable] = useState(false)
   const diffStyle = splitViewAvailable ? preferredDiffStyle : 'unified'
-  const [wrapLines, setWrapLines] = useState(false)
   const [categoryFilter, setCategoryFilter] =
     useState<DiffCategoryFilter>('all')
-  const [fileOrder, setFileOrder] = useState<DiffFileOrder | 'tree'>('tree')
   const resolvedTheme = useResolvedTheme()
   const [copied, setCopied] = useState(false)
   const [filePickerOpen, setFilePickerOpen] = useState(false)
@@ -295,6 +299,10 @@ export default function DiffViewer(props: DiffViewerProps) {
   const [expansionStates, setExpansionStates] = useState<
     ReadonlyMap<string, FileExpansionState>
   >(EMPTY_EXPANSION_STATES)
+
+  useEffect(() => {
+    writeStoredViewSettings(viewSettings)
+  }, [viewSettings])
 
   useEffect(() => {
     function handleFindShortcut(event: KeyboardEvent) {
@@ -1212,12 +1220,18 @@ export default function DiffViewer(props: DiffViewerProps) {
               </Tooltip>
               <ViewOptionsControl
                 order={fileOrder}
-                onOrderChange={setFileOrder}
+                onOrderChange={(fileOrder) =>
+                  setViewSettings((settings) => ({ ...settings, fileOrder }))
+                }
                 diffStyle={diffStyle}
-                onDiffStyleChange={setPreferredDiffStyle}
+                onDiffStyleChange={(diffStyle) =>
+                  setViewSettings((settings) => ({ ...settings, diffStyle }))
+                }
                 splitViewAvailable={splitViewAvailable}
                 wrapLines={wrapLines}
-                onWrapLinesChange={setWrapLines}
+                onWrapLinesChange={(wrapLines) =>
+                  setViewSettings((settings) => ({ ...settings, wrapLines }))
+                }
               />
               {reviewEnabled && (
                 <Popover
