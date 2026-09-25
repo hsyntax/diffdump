@@ -4,6 +4,7 @@ export type DiffViewSettings = {
   fileOrder: DiffFileOrder | 'tree'
   diffStyle: 'unified' | 'split'
   wrapLines: boolean
+  hideWhitespace: boolean
 }
 
 export const VIEW_SETTINGS_STORAGE_KEY = 'diffdump.view-settings.v1'
@@ -12,6 +13,7 @@ const DEFAULT_VIEW_SETTINGS: DiffViewSettings = {
   fileOrder: 'tree',
   diffStyle: 'unified',
   wrapLines: false,
+  hideWhitespace: true,
 }
 
 export function readStoredViewSettings(): DiffViewSettings {
@@ -44,6 +46,10 @@ export function readStoredViewSettings(): DiffViewSettings {
         'wrapLines' in parsed && typeof parsed.wrapLines === 'boolean'
           ? parsed.wrapLines
           : DEFAULT_VIEW_SETTINGS.wrapLines,
+      hideWhitespace:
+        'hideWhitespace' in parsed && typeof parsed.hideWhitespace === 'boolean'
+          ? parsed.hideWhitespace
+          : DEFAULT_VIEW_SETTINGS.hideWhitespace,
     }
   } catch {
     return { ...DEFAULT_VIEW_SETTINGS }
