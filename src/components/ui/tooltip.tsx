@@ -48,7 +48,7 @@ export function TooltipContent({
         <TooltipPrimitive.Popup
           data-slot="tooltip-content"
           className={cn(
-            'max-w-64 origin-[var(--transform-origin)] rounded-control border border-line-bright bg-popover px-2 py-1 font-mono text-[10px] font-medium text-popover-foreground shadow-float',
+            'max-w-64 origin-[var(--transform-origin)] rounded-control border border-line-bright bg-popover px-2 py-1 font-mono text-3xs font-medium text-popover-foreground shadow-float',
             'transition-[opacity,transform] duration-100 data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 data-instant:transition-none',
             className,
           )}

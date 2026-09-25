@@ -24,10 +24,18 @@ export const buttonVariants = cva(
           'border-transparent bg-transparent text-muted-foreground hover:bg-surface-raised hover:text-foreground',
         destructive:
           'border-destructive bg-destructive text-destructive-foreground hover:border-destructive-strong hover:bg-destructive-strong active:translate-y-px',
+        // A multi-line list row that highlights on hover.
+        row: 'cursor-pointer whitespace-normal border-transparent bg-transparent font-normal leading-snug text-foreground transition-colors hover:border-line hover:bg-surface-raised hover:text-foreground',
+        // No chrome: for a button inside a row that is already styled.
+        plain:
+          'whitespace-normal border-0 border-transparent bg-transparent font-normal text-foreground hover:bg-transparent hover:text-foreground',
       },
       size: {
+        '2xs': 'h-6 px-1.5 text-2xs',
         xs: 'h-7 px-2.5',
         sm: 'h-8 px-3',
+        row: 'h-auto gap-1 px-2 py-1.5',
+        flush: 'h-auto gap-1 p-0',
         iconXs: 'size-7 p-0 text-sm',
         iconSm: 'size-8 p-0 text-sm',
       },

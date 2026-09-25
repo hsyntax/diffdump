@@ -33,7 +33,7 @@ export function GuidePage({
           <p className={cn(eyebrowClassName, 'mb-5 text-accent-text')}>
             {eyebrow}
           </p>
-          <h1 className="max-w-[780px] text-[clamp(40px,8vw,72px)] font-[560] leading-[0.98] tracking-[-0.04em]">
+          <h1 className="max-w-[780px] text-display-md font-display leading-display tracking-display">
             {title}
           </h1>
           <p className="mt-6 max-w-[720px] text-base leading-relaxed text-muted-bright md:text-lg">
@@ -81,10 +81,10 @@ export function GuideSection({
 }) {
   return (
     <section>
-      <h2 className="text-2xl font-[560] tracking-[-0.025em] md:text-3xl">
+      <h2 className="text-2xl font-display tracking-tight md:text-3xl">
         {title}
       </h2>
-      <div className="mt-4 space-y-4 text-[15px] leading-7 text-muted-bright">
+      <div className="mt-4 space-y-4 text-md leading-7 text-muted-bright">
         {children}
       </div>
     </section>

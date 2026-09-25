@@ -199,7 +199,7 @@ export function DraftInvalidBadge({ error }: { error: string }) {
       <TooltipTrigger
         render={
           <span
-            className="inline-flex shrink-0 cursor-help items-center rounded border border-line bg-surface px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-deletion"
+            className="inline-flex shrink-0 cursor-help items-center rounded border border-line bg-surface px-1.5 py-0.5 font-mono text-3xs font-medium uppercase tracking-eyebrow text-deletion"
             aria-label={`Can’t submit: ${error}`}
           />
         }
@@ -285,7 +285,7 @@ export function DraftReviewAnnotation({
   return (
     <div className={cardClassName} data-testid="draft-review-annotation">
       <div className="flex items-center gap-2">
-        <span className="inline-flex items-center rounded border border-line bg-surface px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-accent-text">
+        <span className="inline-flex items-center rounded border border-line bg-surface px-1.5 py-0.5 font-mono text-3xs font-medium uppercase tracking-eyebrow text-accent-text">
           Pending
         </span>
         {rangeError !== null && <DraftInvalidBadge error={rangeError} />}

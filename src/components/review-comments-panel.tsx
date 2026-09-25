@@ -110,12 +110,9 @@ export default function ReviewCommentsPanel({
               return (
                 <li key={draft.localId} className={cn(rowClassName, 'gap-1.5')}>
                   <Button
-                    className={cn(
-                      'h-auto w-full flex-col items-start gap-1 whitespace-normal border-0 px-0 py-0 text-left font-normal text-foreground',
-                      'hover:bg-transparent hover:text-foreground',
-                    )}
-                    variant="ghost"
-                    size="xs"
+                    className="w-full flex-col items-start text-left"
+                    variant="plain"
+                    size="flush"
                     onClick={(event) => {
                       if (!clickSelectsRowText(event)) {
                         onSelectDraft(draft)
@@ -196,7 +193,7 @@ export default function ReviewCommentsPanel({
                   <Tooltip>
                     <TooltipTrigger
                       render={
-                        <p className="truncate px-2 pb-1 font-mono text-[11px] text-muted-foreground" />
+                        <p className="truncate px-2 pb-1 font-mono text-2xs text-muted-foreground" />
                       }
                     >
                       {path}
@@ -238,7 +235,7 @@ function ThreadRow({
       <span className="flex w-full items-center gap-1.5">
         <span className="truncate font-medium">{root.author.login}</span>
         {root.outdated && (
-          <span className="inline-flex shrink-0 items-center rounded border border-line bg-surface px-1 py-px font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+          <span className="inline-flex shrink-0 items-center rounded border border-line bg-surface px-1 py-px font-mono text-3xs uppercase tracking-eyebrow text-muted-foreground">
             Outdated
           </span>
         )}
@@ -279,13 +276,9 @@ function ThreadRow({
 
   return (
     <Button
-      className={cn(
-        rowClassName,
-        clickableRowClassName,
-        'h-auto whitespace-normal font-normal text-foreground',
-      )}
-      variant="ghost"
-      size="xs"
+      className="flex w-full flex-col items-start text-left"
+      variant="row"
+      size="row"
       onClick={(event) => {
         if (!clickSelectsRowText(event)) {
           onSelect(thread)
@@ -341,7 +334,7 @@ function CommentLocation({
     <Tooltip>
       <TooltipTrigger
         render={
-          <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-muted-foreground" />
+          <span className="min-w-0 flex-1 truncate font-mono text-2xs text-muted-foreground" />
         }
       >
         {visibleLocation}
@@ -356,7 +349,7 @@ function CommentLocation({
 
 function PanelSectionTitle({ children }: { children: ReactNode }) {
   return (
-    <p className="flex items-center gap-2 px-2 pb-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted-bright">
+    <p className="flex items-center gap-2 px-2 pb-1.5 font-mono text-2xs font-medium uppercase tracking-eyebrow text-muted-bright">
       {children}
     </p>
   )

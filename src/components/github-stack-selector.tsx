@@ -92,7 +92,8 @@ export function GitHubStackSelector({
         {stack ? (
           <Select value={pullNumber} onValueChange={selectPull}>
             <SelectTrigger
-              className="flex-1 justify-center bg-surface-raised px-3 font-mono text-[11px] font-medium"
+              variant="compact"
+              className="flex-1 justify-center font-mono"
               aria-label={`Select a pull request in stack #${summary.number}`}
               data-testid="github-stack-select"
             >
@@ -124,7 +125,7 @@ export function GitHubStackSelector({
                         <span className="shrink-0 font-mono font-medium text-foreground">
                           #{pull.number}
                         </span>
-                        <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
+                        <span className="shrink-0 font-mono text-3xs text-muted-foreground">
                           {index + 1}/{stack.pullRequests.length}
                         </span>
                         <span className="truncate">{pull.title}</span>
@@ -139,18 +140,18 @@ export function GitHubStackSelector({
           <div className="flex h-8 min-w-0 flex-1 items-center justify-center rounded-control border border-line bg-surface-raised px-3">
             {state.status === 'error' ? (
               <StackErrorMessage
-                className="truncate font-mono text-[11px] font-medium text-foreground"
+                className="truncate font-mono text-2xs font-medium text-foreground"
                 label={`Layer ${position} of ${size} · Stack unavailable`}
                 message={state.message}
               />
             ) : (
-              <span className="truncate font-mono text-[11px] font-medium text-foreground">
+              <span className="truncate font-mono text-2xs font-medium text-foreground">
                 PR #{pullNumber} · Layer {position} of {size}
               </span>
             )}
             {state.status === 'loading' && (
               <span
-                className="ml-2 text-[10px] text-muted-foreground"
+                className="ml-2 text-3xs text-muted-foreground"
                 aria-hidden="true"
               >
                 …
@@ -175,14 +176,14 @@ export function GitHubStackSelector({
       </div>
 
       <div className="hidden min-w-0 items-center gap-2 sm:flex">
-        <span className="shrink-0 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+        <span className="shrink-0 font-mono text-2xs font-medium uppercase tracking-eyebrow text-muted-foreground">
           Stack #{summary.number}
         </span>
         <Tooltip>
           <TooltipTrigger
             render={
               <span
-                className="inline-block h-7 max-w-40 shrink-0 cursor-help truncate rounded-control border border-line bg-surface px-2 font-mono text-[11px] leading-[26px] text-muted-bright"
+                className="inline-block h-7 max-w-40 shrink-0 cursor-help truncate rounded-control border border-line bg-surface px-2 font-mono text-2xs leading-6.5 text-muted-bright"
                 aria-label={`Stack base: ${baseRef}`}
               />
             }
@@ -223,7 +224,7 @@ export function GitHubStackSelector({
                               variant: current ? 'primary' : 'outline',
                               size: 'xs',
                             }),
-                            'h-7 gap-1.5 px-2.5 font-mono text-[11px]',
+                            'h-7 gap-1.5 px-2.5 font-mono text-2xs',
                           )}
                           to="/$"
                           params={{
@@ -255,7 +256,7 @@ export function GitHubStackSelector({
             })}
           </nav>
         ) : (
-          <span className="inline-flex items-center gap-2 font-mono text-[11px] text-muted-bright">
+          <span className="inline-flex items-center gap-2 font-mono text-2xs text-muted-bright">
             {state.status === 'loading' && (
               <span
                 className="size-1.5 animate-pulse rounded-full bg-accent-text"
@@ -326,9 +327,9 @@ function RetryStackButton({
 }) {
   return (
     <Button
-      className={cn('h-6 px-1.5 font-mono text-[11px]', className)}
+      className={cn('font-mono', className)}
       variant="ghost"
-      size="xs"
+      size="2xs"
       aria-describedby={statusId}
       onClick={onRetry}
     >

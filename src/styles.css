@@ -48,6 +48,25 @@
   --shadow-float: var(--shadow-floating);
 }
 
+/* Type scale steps beyond Tailwind's defaults. Names outside the T-shirt
+   scale are registered in src/lib/cn.ts so tailwind-merge groups them. */
+@theme {
+  --text-3xs: 10px;
+  --text-2xs: 11px;
+  --text-md: 15px;
+  --text-display-sm: clamp(38px, 7vw, 62px);
+  --text-display-md: clamp(40px, 8vw, 72px);
+  --text-display-lg: clamp(42px, 13vw, 64px);
+  --text-display-xl: clamp(52px, 7vw, 88px);
+  --font-weight-display: 560;
+  --leading-display: 0.98;
+  --leading-code: 1.7;
+  --tracking-display: -0.04em;
+  --tracking-snug: -0.02em;
+  --tracking-label: 0.06em;
+  --tracking-eyebrow: 0.08em;
+}
+
 :root {
   color-scheme: light dark;
   --font-ui:

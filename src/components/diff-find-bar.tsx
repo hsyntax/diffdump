@@ -219,7 +219,8 @@ export default function DiffFindBar({
     >
       <Input
         ref={inputRef}
-        className="h-8 flex-1 border-0 bg-transparent px-2 font-mono focus-visible:ring-0 focus-visible:ring-offset-0 sm:h-7 sm:w-52 sm:flex-none"
+        variant="bare"
+        className="h-8 flex-1 font-mono sm:h-7 sm:w-52 sm:flex-none"
         type="text"
         value={inputValue}
         placeholder="Find in diff"
@@ -236,7 +237,7 @@ export default function DiffFindBar({
         previous.
       </span>
       <output
-        className="min-w-14 px-1 text-right font-mono text-[11px] text-muted-foreground tabular-nums"
+        className="min-w-14 px-1 text-right font-mono text-2xs text-muted-foreground tabular-nums"
         aria-atomic="true"
       >
         {search ? formatMatchCounter(search) : ''}

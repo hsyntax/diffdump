@@ -1,5 +1,6 @@
 import type { ComponentProps } from 'react'
 import { Dialog as SheetPrimitive } from '@base-ui/react/dialog'
+import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '../../lib/cn'
 
@@ -32,32 +33,44 @@ export function SheetOverlay({
   )
 }
 
+export const sheetContentVariants = cva(
+  [
+    'fixed z-50 flex flex-col border-border bg-popover text-sm text-popover-foreground shadow-float outline-none',
+    'transition duration-200 ease-out data-ending-style:opacity-0 data-starting-style:opacity-0',
+    'data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:max-h-3/4 data-[side=bottom]:border-t data-[side=bottom]:data-ending-style:translate-y-10 data-[side=bottom]:data-starting-style:translate-y-10',
+    'data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-3/4 data-[side=left]:border-r data-[side=left]:data-ending-style:-translate-x-10 data-[side=left]:data-starting-style:-translate-x-10',
+    'data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:w-3/4 data-[side=right]:border-l data-[side=right]:data-ending-style:translate-x-10 data-[side=right]:data-starting-style:translate-x-10',
+    'data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:max-h-3/4 data-[side=top]:border-b data-[side=top]:data-ending-style:-translate-y-10 data-[side=top]:data-starting-style:-translate-y-10',
+    'data-[side=left]:sm:max-w-sm data-[side=right]:sm:max-w-sm',
+  ],
+  {
+    variants: {
+      variant: {
+        canvas: 'bg-canvas',
+      },
+    },
+  },
+)
+
 export function SheetContent({
   className,
   children,
   side = 'right',
+  variant,
   overlayClassName,
   ...props
-}: SheetPrimitive.Popup.Props & {
-  side?: 'top' | 'right' | 'bottom' | 'left'
-  overlayClassName?: string
-}) {
+}: SheetPrimitive.Popup.Props &
+  VariantProps<typeof sheetContentVariants> & {
+    side?: 'top' | 'right' | 'bottom' | 'left'
+    overlayClassName?: string
+  }) {
   return (
     <SheetPrimitive.Portal>
       <SheetOverlay className={overlayClassName} />
       <SheetPrimitive.Popup
         data-slot="sheet-content"
         data-side={side}
-        className={cn(
-          'fixed z-50 flex flex-col border-border bg-popover text-sm text-popover-foreground shadow-float outline-none',
-          'transition duration-200 ease-out data-ending-style:opacity-0 data-starting-style:opacity-0',
-          'data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:max-h-3/4 data-[side=bottom]:border-t data-[side=bottom]:data-ending-style:translate-y-10 data-[side=bottom]:data-starting-style:translate-y-10',
-          'data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-3/4 data-[side=left]:border-r data-[side=left]:data-ending-style:-translate-x-10 data-[side=left]:data-starting-style:-translate-x-10',
-          'data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:w-3/4 data-[side=right]:border-l data-[side=right]:data-ending-style:translate-x-10 data-[side=right]:data-starting-style:translate-x-10',
-          'data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:max-h-3/4 data-[side=top]:border-b data-[side=top]:data-ending-style:-translate-y-10 data-[side=top]:data-starting-style:-translate-y-10',
-          'data-[side=left]:sm:max-w-sm data-[side=right]:sm:max-w-sm',
-          className,
-        )}
+        className={cn(sheetContentVariants({ variant }), className)}
         {...props}
       >
         {children}

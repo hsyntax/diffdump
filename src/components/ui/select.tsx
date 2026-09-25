@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'react'
 import { Select as SelectPrimitive } from '@base-ui/react/select'
 import { IconCheck, IconChevronSm } from '@pierre/icons'
+import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '../../lib/cn'
 
@@ -8,20 +9,32 @@ export const Select = SelectPrimitive.Root
 export const SelectGroup = SelectPrimitive.Group
 export const SelectValue = SelectPrimitive.Value
 
+export const selectTriggerVariants = cva(
+  [
+    'group flex h-8 min-w-0 items-center justify-between gap-2 rounded-control border border-line bg-canvas px-3 text-xs text-foreground outline-none transition-[color,background-color,border-color,box-shadow]',
+    'hover:border-line-bright hover:bg-surface focus-visible:border-accent-text focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'disabled:pointer-events-none disabled:opacity-55 [&_[data-slot=select-value]]:min-w-0 [&_[data-slot=select-value]]:truncate',
+  ],
+  {
+    variants: {
+      variant: {
+        // A raised, smaller label for dense toolbars.
+        compact: 'bg-surface-raised text-2xs font-medium',
+      },
+    },
+  },
+)
+
 export function SelectTrigger({
   className,
   children,
+  variant,
   ...props
-}: SelectPrimitive.Trigger.Props) {
+}: SelectPrimitive.Trigger.Props & VariantProps<typeof selectTriggerVariants>) {
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
-      className={cn(
-        'group flex h-8 min-w-0 items-center justify-between gap-2 rounded-control border border-line bg-canvas px-3 text-xs text-foreground outline-none transition-[color,background-color,border-color,box-shadow]',
-        'hover:border-line-bright hover:bg-surface focus-visible:border-accent-text focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-        'disabled:pointer-events-none disabled:opacity-55 [&_[data-slot=select-value]]:min-w-0 [&_[data-slot=select-value]]:truncate',
-        className,
-      )}
+      className={cn(selectTriggerVariants({ variant }), className)}
       {...props}
     >
       {children}
@@ -85,7 +98,7 @@ export function SelectLabel({
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
       className={cn(
-        'px-2 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground',
+        'px-2 py-1.5 font-mono text-3xs font-medium uppercase tracking-eyebrow text-muted-foreground',
         className,
       )}
       {...props}
