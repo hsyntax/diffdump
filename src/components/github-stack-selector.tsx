@@ -176,7 +176,7 @@ export function GitHubStackSelector({
       </div>
 
       <div className="hidden min-w-0 items-center gap-2 sm:flex">
-        <span className="shrink-0 font-mono text-2xs font-medium uppercase tracking-eyebrow text-muted-foreground">
+        <span className="shrink-0 text-xs font-medium text-muted-foreground">
           Stack #{summary.number}
         </span>
         <Tooltip>

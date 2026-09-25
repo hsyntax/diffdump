@@ -36,7 +36,7 @@ export const tabsTriggerVariants = cva(
         eyebrow: [
           eyebrowClassName,
           'h-8 gap-1.5 text-muted-foreground transition-colors hover:text-muted-bright data-active:text-foreground',
-          'data-active:after:absolute data-active:after:inset-x-0 data-active:after:bottom-0 data-active:after:h-0.5 data-active:after:rounded-full data-active:after:bg-foreground',
+          'data-active:after:absolute data-active:after:inset-x-0 data-active:after:bottom-0 data-active:after:h-0.5 data-active:after:rounded-full data-active:after:bg-accent-text',
         ],
       },
     },

@@ -235,7 +235,7 @@ function ThreadRow({
       <span className="flex w-full items-center gap-1.5">
         <span className="truncate font-medium">{root.author.login}</span>
         {root.outdated && (
-          <span className="inline-flex shrink-0 items-center rounded border border-line bg-surface px-1 py-px font-mono text-3xs uppercase tracking-eyebrow text-muted-foreground">
+          <span className="inline-flex shrink-0 items-center rounded border border-line bg-surface px-1 py-px text-2xs font-medium text-muted-foreground">
             Outdated
           </span>
         )}
@@ -349,7 +349,7 @@ function CommentLocation({
 
 function PanelSectionTitle({ children }: { children: ReactNode }) {
   return (
-    <p className="flex items-center gap-2 px-2 pb-1.5 font-mono text-2xs font-medium uppercase tracking-eyebrow text-muted-bright">
+    <p className="flex items-center gap-2 px-2 pb-1.5 text-xs font-medium text-muted-bright">
       {children}
     </p>
   )

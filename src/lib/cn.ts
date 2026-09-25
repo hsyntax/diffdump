@@ -9,7 +9,7 @@ const twMerge = extendTailwindMerge({
       text: ['display-sm', 'display-md', 'display-lg', 'display-xl'],
       'font-weight': ['display'],
       leading: ['display', 'code'],
-      tracking: ['display', 'snug', 'label', 'eyebrow'],
+      tracking: ['display', 'snug'],
     },
   },
 })

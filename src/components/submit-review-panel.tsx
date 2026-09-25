@@ -90,7 +90,7 @@ export default function SubmitReviewPanel({
       }}
     >
       <div className="flex items-center justify-between">
-        <span className="font-mono text-2xs font-medium uppercase tracking-eyebrow text-muted-bright">
+        <span className="text-xs font-medium text-muted-bright">
           Submit review
         </span>
         <span className="text-muted-foreground tabular-nums">
