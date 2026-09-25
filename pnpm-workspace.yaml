@@ -9,7 +9,7 @@ allowBuilds:
   workerd: true
 
 minimumReleaseAgeExclude:
-  - '@pierre/diffs@1.4.1'
+  - '@pierre/diffs@1.5.1'
 
 # Trees pins the older theming patch, whose peer range excludes theme 2.
 overrides:
