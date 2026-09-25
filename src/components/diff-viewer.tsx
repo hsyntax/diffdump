@@ -1070,7 +1070,7 @@ export default function DiffViewer(props: DiffViewerProps) {
 
         <div className="flex items-center gap-2">
           {expiresAt && (
-            <span className="hidden font-mono text-[11px] sm:block">
+            <span className="hidden font-mono text-2xs sm:block">
               <ExpiryCountdown expiresAt={expiresAt} />
             </span>
           )}
@@ -1128,7 +1128,7 @@ export default function DiffViewer(props: DiffViewerProps) {
       </header>
 
       <Toolbar
-        className="min-w-0 max-w-full flex-col items-stretch gap-0 p-0 [grid-area:toolbar]"
+        className="min-w-0 max-w-full flex-col items-stretch p-0 [grid-area:toolbar]"
         aria-label="Diff controls"
       >
         <div className="flex min-w-0 flex-col gap-2 py-2 sm:flex-row sm:items-center">
@@ -1168,7 +1168,8 @@ export default function DiffViewer(props: DiffViewerProps) {
                   <span className="max-[390px]:sr-only">Files</span>
                 </SheetTrigger>
                 <SheetContent
-                  className="w-[min(280px,calc(100%-44px))] bg-canvas p-0 md:hidden"
+                  variant="canvas"
+                  className="w-[min(280px,calc(100%-44px))] md:hidden"
                   overlayClassName="md:hidden"
                   side="left"
                 >
@@ -1252,7 +1253,8 @@ export default function DiffViewer(props: DiffViewerProps) {
                     )}
                   </PopoverTrigger>
                   <PopoverContent
-                    className="w-auto border-0 bg-transparent p-0 shadow-none"
+                    variant="bare"
+                    className="w-auto"
                     align="end"
                     aria-label="Submit review"
                   >
@@ -1415,16 +1417,10 @@ function DiffSidebar({
             aria-label="Sidebar sections"
             activateOnFocus
           >
-            <TabsTrigger
-              className="h-8 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground transition-colors hover:text-muted-bright data-active:text-foreground data-active:after:absolute data-active:after:inset-x-0 data-active:after:bottom-0 data-active:after:h-0.5 data-active:after:rounded-full data-active:after:bg-foreground"
-              value="files"
-            >
+            <TabsTrigger variant="eyebrow" value="files">
               Files
             </TabsTrigger>
-            <TabsTrigger
-              className="h-8 gap-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground transition-colors hover:text-muted-bright data-active:text-foreground data-active:after:absolute data-active:after:inset-x-0 data-active:after:bottom-0 data-active:after:h-0.5 data-active:after:rounded-full data-active:after:bg-foreground"
-              value="comments"
-            >
+            <TabsTrigger variant="eyebrow" value="comments">
               Comments
               <span className="text-muted-foreground tabular-nums">
                 {reviewItemCount}
@@ -1464,7 +1460,7 @@ function DiffSidebar({
 
 function SidebarLoading({ label }: { label: string }) {
   return (
-    <output className="flex h-full items-center justify-center gap-2 px-4 font-mono text-[11px] text-muted-foreground">
+    <output className="flex h-full items-center justify-center gap-2 px-4 font-mono text-2xs text-muted-foreground">
       <span
         className="size-1.5 animate-pulse rounded-full bg-accent-text"
         aria-hidden="true"
@@ -1476,7 +1472,7 @@ function SidebarLoading({ label }: { label: string }) {
 
 function ReviewPanelLoading() {
   return (
-    <output className="flex w-72 items-center gap-2 rounded-control border border-line bg-canvas p-3 font-mono text-[11px] text-muted-foreground shadow-float">
+    <output className="flex w-72 items-center gap-2 rounded-control border border-line bg-canvas p-3 font-mono text-2xs text-muted-foreground shadow-float">
       <span
         className="size-1.5 animate-pulse rounded-full bg-accent-text"
         aria-hidden="true"
@@ -1493,7 +1489,7 @@ function FileExpansionStatus({ state }: { state: FileExpansionState }) {
         <TooltipTrigger
           render={
             <output
-              className="cursor-help font-mono text-[11px] font-medium text-deletion"
+              className="cursor-help font-mono text-2xs font-medium text-deletion"
               aria-label={`Expand failed: ${state.message}`}
             />
           }
@@ -1506,7 +1502,7 @@ function FileExpansionStatus({ state }: { state: FileExpansionState }) {
   }
 
   return (
-    <output className="inline-flex items-center gap-1.5 font-mono text-[11px] font-medium text-muted-foreground">
+    <output className="inline-flex items-center gap-1.5 font-mono text-2xs font-medium text-muted-foreground">
       <span
         className="size-1.5 animate-pulse rounded-full bg-accent-text"
         aria-hidden="true"
@@ -1527,7 +1523,7 @@ function ViewedFileControl({
 
   return (
     <label
-      className="inline-flex cursor-pointer select-none items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground"
+      className="inline-flex cursor-pointer select-none items-center gap-1.5 text-2xs font-medium text-muted-foreground hover:text-foreground"
       htmlFor={checkboxId}
     >
       <Checkbox id={checkboxId} checked={viewed} onCheckedChange={onChange} />
@@ -1568,12 +1564,7 @@ function CategoryFilters({
           <ToggleGroupItem
             key={filter}
             value={filter}
-            className={cn(
-              'relative inline-flex h-8 shrink-0 items-center gap-2 font-mono text-[11px] text-muted-foreground transition-colors',
-              'hover:text-muted-bright',
-              'disabled:pointer-events-none disabled:opacity-55',
-              'data-pressed:text-foreground data-pressed:after:absolute data-pressed:after:inset-x-0 data-pressed:after:bottom-0 data-pressed:after:h-0.5 data-pressed:after:rounded-full data-pressed:after:bg-foreground',
-            )}
+            variant="indicator"
             disabled={filterSummary.files === 0}
             data-testid={`category-filter-${filter}`}
           >
@@ -1629,7 +1620,8 @@ function ViewOptionsControl({
         View
       </PopoverTrigger>
       <PopoverContent
-        className="flex w-44 flex-col gap-3 bg-canvas p-3"
+        variant="canvas"
+        className="flex w-44 flex-col gap-3 p-3"
         aria-label="View options"
       >
         <ViewOptionGroup
@@ -1666,7 +1658,7 @@ function ViewOptionsControl({
           />
         )}
         <label
-          className="flex cursor-pointer items-center justify-between rounded-control px-2 py-1.5 font-mono text-[11px] text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground"
+          className="flex cursor-pointer items-center justify-between rounded-control px-2 py-1.5 font-mono text-2xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground"
           htmlFor={wrapLinesId}
         >
           Wrap lines
@@ -1712,11 +1704,8 @@ function ViewOptionGroup<Value extends string>({
           <ToggleGroupItem
             key={option.value}
             value={option.value}
-            className={cn(
-              'group flex items-center gap-2 rounded-control px-2 py-1.5 text-left font-mono text-[11px] transition-colors',
-              'hover:bg-surface-raised hover:text-foreground',
-              'text-muted-foreground data-pressed:text-foreground',
-            )}
+            variant="option"
+            className="group"
             aria-describedby={
               option.title ? `${descriptionId}-${option.value}` : undefined
             }
@@ -1748,7 +1737,7 @@ function ViewOptionGroup<Value extends string>({
 function DiffCategoryBadge({ category }: { category: DiffCategory }) {
   return (
     <span
-      className="flex items-center rounded border border-line bg-surface-raised px-1.5 py-0.5 font-mono text-[10px] font-medium leading-none uppercase tracking-[0.08em] text-muted-bright"
+      className="flex items-center rounded border border-line bg-surface-raised px-1.5 py-0.5 font-mono text-3xs font-medium leading-none uppercase tracking-eyebrow text-muted-bright"
       data-diff-category={category}
     >
       {DIFF_CATEGORY_DETAILS[category].label}
@@ -1795,7 +1784,7 @@ function ExpiryCountdown({ expiresAt }: { expiresAt: string }) {
       <TooltipTrigger
         render={
           <time
-            className="cursor-help text-muted-foreground underline decoration-line-bright decoration-dotted underline-offset-[3px]"
+            className="cursor-help text-muted-foreground underline decoration-line-bright decoration-dotted underline-offset-3"
             dateTime={expiresAt}
             aria-label={
               absoluteExpiry

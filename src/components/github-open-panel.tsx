@@ -73,7 +73,8 @@ export function GitHubOpenPanel({
         </label>
         <div className="mt-4 flex max-w-[640px] flex-col items-stretch gap-2 sm:flex-row">
           <Input
-            className="h-10 flex-1 px-3.5 font-mono"
+            size="lg"
+            className="flex-1 font-mono"
             id="github-url-input"
             type="url"
             value={url}

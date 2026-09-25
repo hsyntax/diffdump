@@ -1,8 +1,44 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "jsPlugins": ["@shadcn/lint"],
+  "rules": {
+    "shadcn/no-restyle": [
+      "error",
+      {
+        // Mono marks code-like content such as URLs, tokens, and paths.
+        "allow": ["layout", "font-family"],
+        "contracts": [
+          // The tabs root renders no chrome of its own.
+          {
+            "pattern": "^Tabs$",
+            "allow": ["layout", "font-family", "color", "shape"]
+          },
+          // Containers whose children and inner padding come from the caller.
+          {
+            "pattern": "^(TabsList|RadioGroup|Toolbar|PopoverContent)$",
+            "allow": ["layout", "font-family", "spacing"]
+          }
+        ]
+      }
+    ],
+    "shadcn/no-raw-colors": "error",
+    "shadcn/no-arbitrary-values": ["error", { "allow": ["layout"] }],
+    "shadcn/no-inline-styles": "error",
+    "shadcn/no-unknown-classes": "error",
+    "shadcn/require-static-classes": "error"
+  },
   // Preserve existing effect synchronization and imperative viewer integration
   // during this dependency upgrade. New files retain the new React checks.
   "overrides": [
+    {
+      "files": ["src/components/ui/**"],
+      // Components own their appearance, including structural values.
+      "rules": {
+        "shadcn/no-restyle": "off",
+        "shadcn/no-arbitrary-values": "off",
+        "shadcn/require-static-classes": "off"
+      }
+    },
     {
       "files": [
         "src/components/github-open-panel.tsx",

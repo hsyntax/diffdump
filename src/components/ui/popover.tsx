@@ -1,5 +1,6 @@
 import type { ComponentProps } from 'react'
 import { Popover as PopoverPrimitive } from '@base-ui/react/popover'
+import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '../../lib/cn'
 
@@ -11,8 +12,25 @@ export function PopoverTrigger(props: PopoverPrimitive.Trigger.Props) {
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
 }
 
+export const popoverContentVariants = cva(
+  [
+    'origin-[var(--transform-origin)] rounded-control border border-border bg-popover text-popover-foreground shadow-float outline-none',
+    'duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+  ],
+  {
+    variants: {
+      variant: {
+        // No chrome: for content that draws its own surface.
+        bare: 'border-0 bg-transparent shadow-none',
+        canvas: 'bg-canvas',
+      },
+    },
+  },
+)
+
 export function PopoverContent({
   className,
+  variant,
   align = 'end',
   alignOffset = 0,
   side = 'bottom',
@@ -22,7 +40,8 @@ export function PopoverContent({
   Pick<
     PopoverPrimitive.Positioner.Props,
     'align' | 'alignOffset' | 'side' | 'sideOffset'
-  >) {
+  > &
+  VariantProps<typeof popoverContentVariants>) {
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Positioner
@@ -34,11 +53,7 @@ export function PopoverContent({
       >
         <PopoverPrimitive.Popup
           data-slot="popover-content"
-          className={cn(
-            'origin-[var(--transform-origin)] rounded-control border border-border bg-popover text-popover-foreground shadow-float outline-none',
-            'duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
-            className,
-          )}
+          className={cn(popoverContentVariants({ variant }), className)}
           {...props}
         />
       </PopoverPrimitive.Positioner>

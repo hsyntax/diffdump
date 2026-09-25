@@ -10,7 +10,7 @@ export function Wordmark({ className }: WordmarkProps) {
   return (
     <Link
       className={cn(
-        'inline-flex items-center gap-2 font-sans text-[15px] font-semibold tracking-[-0.025em]',
+        'inline-flex items-center gap-2 font-sans text-md font-semibold tracking-tight',
         className,
       )}
       to="/"

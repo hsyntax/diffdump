@@ -178,7 +178,7 @@ function Home() {
       <SiteHeader />
 
       <section className="pt-16 pb-10 md:pt-24 md:pb-12">
-        <h1 className="max-w-[1050px] text-[clamp(42px,13vw,64px)] font-[560] leading-[0.98] tracking-[-0.04em] md:text-[clamp(52px,7vw,88px)]">
+        <h1 className="max-w-[1050px] text-display-lg font-display leading-display tracking-display md:text-display-xl">
           Review your <span className="text-accent-text">diffs.</span>
         </h1>
         <p className="mt-6 max-w-[680px] text-base leading-relaxed text-muted-bright md:mt-8 md:text-lg">
@@ -201,17 +201,17 @@ function Home() {
               key={capability.label}
               className="border-b border-line px-1 py-5 last:border-b-0 md:border-b-0 md:px-6 md:py-6 md:first:pl-1 md:last:pr-1"
             >
-              <div className="flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground">
+              <div className="flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-label text-muted-foreground">
                 <span className="text-accent-text">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <span aria-hidden="true" className="h-px w-5 bg-line-bright" />
                 {capability.label}
               </div>
-              <h3 className="mt-3 text-lg font-semibold tracking-[-0.02em]">
+              <h3 className="mt-3 text-lg font-semibold tracking-snug">
                 {capability.title}
               </h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-muted-bright">
+              <p className="mt-2 text-md leading-relaxed text-muted-bright">
                 {capability.description}
               </p>
             </article>
@@ -259,13 +259,15 @@ function Home() {
                 activateOnFocus
               >
                 <TabsTrigger
-                  className="-mb-px border-b-2 border-transparent px-3.5 transition-colors hover:text-foreground data-active:border-primary data-active:text-accent-text"
+                  variant="underline"
+                  className="-mb-px"
                   value="github"
                 >
                   github.com/…
                 </TabsTrigger>
                 <TabsTrigger
-                  className="-mb-px border-b-2 border-transparent px-3.5 transition-colors hover:text-foreground data-active:border-primary data-active:text-accent-text"
+                  variant="underline"
+                  className="-mb-px"
                   value="paste"
                 >
                   diff.patch
@@ -297,7 +299,8 @@ function Home() {
           <TabsContent value="paste">
             <form onSubmit={handleSubmit}>
               <Textarea
-                className="block min-h-[300px] resize-y rounded-none border-0 bg-panel px-5 py-5 font-mono leading-[1.7] caret-accent-text focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-solid focus-visible:outline-accent-text md:min-h-80 md:px-6 md:py-6 md:text-[13px]"
+                variant="editor"
+                className="block min-h-[300px] resize-y md:min-h-80"
                 id="diff-input"
                 name="diff"
                 value={diff}
@@ -339,7 +342,7 @@ function Home() {
                 <div className="flex shrink-0 items-center justify-between gap-4 md:justify-start">
                   <span
                     className={cn(
-                      'min-w-[55px] text-right font-mono text-[11px] text-muted-foreground',
+                      'min-w-[55px] text-right font-mono text-2xs text-muted-foreground',
                       byteLength > MAX_DIFF_BYTES && 'text-danger',
                     )}
                   >
@@ -380,7 +383,7 @@ function Home() {
               </p>
             </div>
             <div className="min-w-0 rounded-control border border-line bg-canvas px-3 py-1.5">
-              <code className="font-mono text-xs leading-[1.7] [overflow-wrap:anywhere]">
+              <code className="font-mono text-xs leading-code [overflow-wrap:anywhere]">
                 <span className="text-muted-foreground line-through">
                   github.com
                 </span>
@@ -410,7 +413,7 @@ function Home() {
             </div>
             <div className="flex min-w-0 items-center gap-2">
               <div className="min-w-0 flex-1 rounded-control border border-line bg-canvas px-3 py-1.5">
-                <code className="font-mono text-xs leading-[1.7] text-foreground [overflow-wrap:anywhere]">
+                <code className="font-mono text-xs leading-code text-foreground [overflow-wrap:anywhere]">
                   <span
                     className="select-none text-muted-foreground"
                     aria-hidden="true"
