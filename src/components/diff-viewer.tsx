@@ -1138,7 +1138,9 @@ export default function DiffViewer(props: DiffViewerProps) {
             onChange={setCategoryFilter}
           />
 
-          <div className="flex min-w-0 flex-col gap-2 sm:ml-auto sm:flex-row sm:items-center sm:gap-3">
+          {/* Takes the width the filters leave so the stack selector can
+              measure whether its full chip row fits. */}
+          <div className="flex min-w-0 flex-col gap-2 sm:min-w-auto sm:flex-1 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
             {isGitHubDiff && props.stackSummary && reviewTarget && (
               <Suspense fallback={null}>
                 <GitHubStackSelector
@@ -1152,7 +1154,7 @@ export default function DiffViewer(props: DiffViewerProps) {
               </Suspense>
             )}
 
-            <div className="flex min-w-0 flex-wrap items-center gap-2 px-3 sm:shrink-0 sm:justify-end sm:px-0 md:flex-nowrap md:gap-3 md:pr-4">
+            <div className="flex min-w-0 flex-wrap items-center gap-2 px-3 sm:shrink-0 sm:flex-nowrap sm:justify-end sm:px-0 md:gap-3 md:pr-4">
               <Sheet open={filePickerOpen} onOpenChange={setFilePickerOpen}>
                 <SheetTrigger
                   render={

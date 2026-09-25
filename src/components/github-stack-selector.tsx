@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import {
   IconArrow,
@@ -63,6 +64,29 @@ export function GitHubStackSelector({
   const baseRef = stack?.baseRef ?? summary.baseRef
   const statusId = `github-stack-status-${summary.number}`
 
+  /* The chip row is shown only when every chip fits beside the category
+     filters and actions; otherwise the compact picker takes its place. The
+     row keeps its natural width while hidden, and the region's width does not
+     depend on its content, so switching layouts never re-triggers a switch. */
+  const regionRef = useRef<HTMLElement>(null)
+  const chipsRef = useRef<HTMLDivElement>(null)
+  const [chipsFit, setChipsFit] = useState(true)
+
+  useLayoutEffect(() => {
+    const region = regionRef.current
+    const chips = chipsRef.current
+    if (!region || !chips) {
+      return
+    }
+
+    const observer = new ResizeObserver(() => {
+      setChipsFit(chips.offsetWidth <= region.clientWidth)
+    })
+    observer.observe(region)
+    observer.observe(chips)
+    return () => observer.disconnect()
+  }, [])
+
   function selectPull(selectedPullNumber: string | null) {
     if (selectedPullNumber && selectedPullNumber !== pullNumber) {
       void navigate({
@@ -76,12 +100,19 @@ export function GitHubStackSelector({
 
   return (
     <section
-      className="flex min-w-0 items-center"
+      ref={regionRef}
+      className="@container relative flex min-w-0 items-center sm:min-w-48 sm:flex-1 sm:justify-end"
       aria-label={`Pull request stack #${summary.number}`}
       aria-busy={state.status === 'loading'}
+      data-layout={chipsFit ? 'chips' : 'compact'}
       data-testid="github-stack-selector"
     >
-      <div className="flex min-w-0 flex-1 items-center gap-2 px-3 sm:hidden">
+      <div
+        className={cn(
+          'flex min-w-0 flex-1 items-center gap-2 px-3 sm:max-w-80 sm:px-0',
+          chipsFit && 'sm:hidden',
+        )}
+      >
         <StackStepLink
           direction="previous"
           owner={owner}
@@ -97,8 +128,15 @@ export function GitHubStackSelector({
               aria-label={`Select a pull request in stack #${summary.number}`}
               data-testid="github-stack-select"
             >
+              {/* Beside the toolbar actions the picker can be narrow, so it
+                  uses the chips' short form there. */}
               <SelectValue>
-                {`PR #${pullNumber} · Layer ${position} of ${size}`}
+                <span className="sm:hidden">
+                  {`PR #${pullNumber} · Layer ${position} of ${size}`}
+                </span>
+                <span className="hidden sm:inline">
+                  {`#${pullNumber} · ${position}/${size}`}
+                </span>
               </SelectValue>
             </SelectTrigger>
             <SelectContent className="w-[min(24rem,calc(100vw-5rem))]">
@@ -175,7 +213,13 @@ export function GitHubStackSelector({
         />
       </div>
 
-      <div className="hidden min-w-0 items-center gap-2 sm:flex">
+      <div
+        ref={chipsRef}
+        className={cn(
+          'hidden w-max shrink-0 items-center gap-2 sm:flex',
+          !chipsFit && 'sm:invisible sm:absolute sm:right-0',
+        )}
+      >
         <span className="shrink-0 text-xs font-medium text-muted-foreground">
           Stack #{summary.number}
         </span>
@@ -198,7 +242,7 @@ export function GitHubStackSelector({
 
         {stack ? (
           <nav
-            className="category-filter-scroll flex min-w-0 items-center gap-1.5 overflow-x-auto"
+            className="flex items-center gap-1.5"
             aria-label={`Pull requests in stack #${summary.number}, ordered from base to top`}
           >
             {stack.pullRequests.map((pull, index) => {

@@ -7,7 +7,10 @@ import { cn } from '../../lib/cn'
 
 export const Select = SelectPrimitive.Root
 export const SelectGroup = SelectPrimitive.Group
-export const SelectValue = SelectPrimitive.Value
+export function SelectValue(props: SelectPrimitive.Value.Props) {
+  // The slot lets SelectTrigger truncate the value on one line.
+  return <SelectPrimitive.Value data-slot="select-value" {...props} />
+}
 
 export const selectTriggerVariants = cva(
   [
