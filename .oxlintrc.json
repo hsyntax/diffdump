@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "jsPlugins": ["@shadcn/lint"],
   // Preserve existing effect synchronization and imperative viewer integration
   // during this dependency upgrade. New files retain the new React checks.
   "overrides": [
