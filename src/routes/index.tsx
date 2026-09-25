@@ -201,8 +201,8 @@ function Home() {
               key={capability.label}
               className="border-b border-line px-1 py-5 last:border-b-0 md:border-b-0 md:px-6 md:py-6 md:first:pl-1 md:last:pr-1"
             >
-              <div className="flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-label text-muted-foreground">
-                <span className="text-accent-text">
+              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                <span className="font-mono text-accent-text">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <span aria-hidden="true" className="h-px w-5 bg-line-bright" />

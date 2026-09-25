@@ -892,7 +892,7 @@ export default function DiffViewer(props: DiffViewerProps) {
       loadDiffFiles: trackedLoadDiffFiles,
       expansionLineCount: 20,
       itemMetrics: {
-        lineHeight: 20,
+        lineHeight: 18,
       },
       layout: {
         paddingTop: 20,
@@ -1070,7 +1070,7 @@ export default function DiffViewer(props: DiffViewerProps) {
 
         <div className="flex items-center gap-2">
           {expiresAt && (
-            <span className="hidden font-mono text-2xs sm:block">
+            <span className="hidden text-xs tabular-nums sm:block">
               <ExpiryCountdown expiresAt={expiresAt} />
             </span>
           )}
@@ -1138,7 +1138,9 @@ export default function DiffViewer(props: DiffViewerProps) {
             onChange={setCategoryFilter}
           />
 
-          <div className="flex min-w-0 flex-col gap-2 sm:ml-auto sm:flex-row sm:items-center sm:gap-3">
+          {/* Takes the width the filters leave so the stack selector can
+              measure whether its full chip row fits. */}
+          <div className="flex min-w-0 flex-col gap-2 sm:min-w-auto sm:flex-1 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
             {isGitHubDiff && props.stackSummary && reviewTarget && (
               <Suspense fallback={null}>
                 <GitHubStackSelector
@@ -1152,7 +1154,7 @@ export default function DiffViewer(props: DiffViewerProps) {
               </Suspense>
             )}
 
-            <div className="flex min-w-0 flex-wrap items-center gap-2 px-3 sm:shrink-0 sm:justify-end sm:px-0 md:flex-nowrap md:gap-3 md:pr-4">
+            <div className="flex min-w-0 flex-wrap items-center gap-2 px-3 sm:shrink-0 sm:flex-nowrap sm:justify-end sm:px-0 md:gap-3 md:pr-4">
               <Sheet open={filePickerOpen} onOpenChange={setFilePickerOpen}>
                 <SheetTrigger
                   render={
@@ -1460,7 +1462,7 @@ function DiffSidebar({
 
 function SidebarLoading({ label }: { label: string }) {
   return (
-    <output className="flex h-full items-center justify-center gap-2 px-4 font-mono text-2xs text-muted-foreground">
+    <output className="flex h-full items-center justify-center gap-2 px-4 text-xs text-muted-foreground">
       <span
         className="size-1.5 animate-pulse rounded-full bg-accent-text"
         aria-hidden="true"
@@ -1472,7 +1474,7 @@ function SidebarLoading({ label }: { label: string }) {
 
 function ReviewPanelLoading() {
   return (
-    <output className="flex w-72 items-center gap-2 rounded-control border border-line bg-canvas p-3 font-mono text-2xs text-muted-foreground shadow-float">
+    <output className="flex w-72 items-center gap-2 rounded-control border border-line bg-canvas p-3 text-xs text-muted-foreground shadow-float">
       <span
         className="size-1.5 animate-pulse rounded-full bg-accent-text"
         aria-hidden="true"
@@ -1489,7 +1491,7 @@ function FileExpansionStatus({ state }: { state: FileExpansionState }) {
         <TooltipTrigger
           render={
             <output
-              className="cursor-help font-mono text-2xs font-medium text-deletion"
+              className="cursor-help text-xs font-medium text-deletion"
               aria-label={`Expand failed: ${state.message}`}
             />
           }
@@ -1502,7 +1504,7 @@ function FileExpansionStatus({ state }: { state: FileExpansionState }) {
   }
 
   return (
-    <output className="inline-flex items-center gap-1.5 font-mono text-2xs font-medium text-muted-foreground">
+    <output className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
       <span
         className="size-1.5 animate-pulse rounded-full bg-accent-text"
         aria-hidden="true"
@@ -1580,7 +1582,7 @@ function CategoryFilters({
 function CategorySummary({ summary }: { summary: DiffLineSummary }) {
   return (
     <span
-      className="inline-flex items-center gap-1.5 tabular-nums text-muted-foreground"
+      className="inline-flex items-center gap-1.5 font-mono text-2xs tabular-nums text-muted-foreground"
       aria-label={`${summary.files} ${summary.files === 1 ? 'file' : 'files'}, ${summary.additions} additions, ${summary.deletions} deletions`}
     >
       <span>{summary.files}</span>
@@ -1658,7 +1660,7 @@ function ViewOptionsControl({
           />
         )}
         <label
-          className="flex cursor-pointer items-center justify-between rounded-control px-2 py-1.5 font-mono text-2xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground"
+          className="flex cursor-pointer items-center justify-between rounded-control px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground"
           htmlFor={wrapLinesId}
         >
           Wrap lines
@@ -1737,7 +1739,7 @@ function ViewOptionGroup<Value extends string>({
 function DiffCategoryBadge({ category }: { category: DiffCategory }) {
   return (
     <span
-      className="flex items-center rounded border border-line bg-surface-raised px-1.5 py-0.5 font-mono text-3xs font-medium leading-none uppercase tracking-eyebrow text-muted-bright"
+      className="flex items-center rounded border border-line bg-surface-raised px-1.5 py-0.5 text-2xs font-medium leading-none text-muted-bright"
       data-diff-category={category}
     >
       {DIFF_CATEGORY_DETAILS[category].label}

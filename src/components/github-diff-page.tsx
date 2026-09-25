@@ -366,7 +366,7 @@ function GitHubDiffLoading() {
         </div>
       </header>
       <div
-        className="flex items-center justify-center gap-3 font-mono text-xs text-muted-foreground"
+        className="flex items-center justify-center gap-3 text-xs text-muted-foreground"
         aria-live="polite"
       >
         <span

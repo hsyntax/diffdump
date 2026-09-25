@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
-@import '@fontsource-variable/inter';
 @import '@fontsource-variable/jetbrains-mono';
 
 @theme inline {
@@ -61,17 +60,15 @@
   --font-weight-display: 560;
   --leading-display: 0.98;
   --leading-code: 1.7;
-  --tracking-display: -0.04em;
+  --tracking-display: -0.03em;
   --tracking-snug: -0.02em;
-  --tracking-label: 0.06em;
-  --tracking-eyebrow: 0.08em;
 }
 
 :root {
   color-scheme: light dark;
   --font-ui:
-    'Inter Variable', Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont,
-    'Segoe UI', sans-serif;
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
   --font-code:
     'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular,
     Menlo, Monaco, Consolas, monospace;
@@ -79,14 +76,15 @@
   font-synthesis: none;
   color: var(--text);
   background: var(--canvas);
-  /* Pierre theme surfaces, with Diffshub's foreground mixes for chrome. */
-  --canvas: light-dark(#f5f5f5, #171717);
-  --panel: light-dark(#ffffff, #0a0a0a);
-  --text: light-dark(#525252, #a3a3a3);
-  --surface: color-mix(in srgb, var(--text) 7%, var(--canvas));
-  --surface-raised: color-mix(in srgb, var(--text) 14%, var(--canvas));
-  --line: color-mix(in srgb, var(--text) 22%, var(--canvas));
-  --line-bright: color-mix(in srgb, var(--text) 28%, var(--canvas));
+  /* Warm neutrals after Claude's desktop palette: dark-mode panels sit a
+     step above the page rather than below it. */
+  --canvas: light-dark(#fcfcfb, #151515);
+  --panel: light-dark(#ffffff, #1a1a19);
+  --text: light-dark(#52514e, #c3c2b7);
+  --surface: light-dark(#f0efec, #20201f);
+  --surface-raised: light-dark(#e4e3de, #2a2a28);
+  --line: light-dark(#e1e0d9, #31312f);
+  --line-bright: light-dark(#c3c2b7, #454441);
   --background: var(--canvas);
   --foreground: var(--text);
   --card: var(--surface);
@@ -97,44 +95,42 @@
   --input: var(--line);
   --ring: var(--accent-text);
   --muted: var(--surface-raised);
-  --muted-foreground: light-dark(#626262, #878787);
-  --muted-bright: light-dark(#0a0a0a, #fafafa);
+  --muted-foreground: light-dark(#73726c, #8f8d86);
+  --muted-bright: light-dark(#0b0b0b, #f0efec);
   --accent: var(--surface-raised);
   --accent-foreground: var(--text);
-  --accent-text: #009fff;
-  /* Give actions Pierre's blue accent, with a darker light-mode fill so
-     small white button labels retain enough contrast. */
-  --primary: light-dark(#0077c8, #009fff);
-  --primary-strong: light-dark(#0063a8, #35b3ff);
-  --primary-foreground: light-dark(#ffffff, #07131c);
-  --secondary: light-dark(#e5f2ff, #172e40);
-  --secondary-strong: light-dark(#d3e9ff, #21415b);
-  --secondary-border: light-dark(#b5d8f3, #2d5774);
-  --secondary-border-strong: light-dark(#83bbe7, #4381a9);
-  --secondary-foreground: light-dark(#075985, #b3e1ff);
-  --destructive: light-dark(#be123c, #fb7185);
-  --destructive-strong: light-dark(#d52c36, #ff2e3f);
+  /* Clay marks every action and active state. Light mode uses a darker
+     clay so white labels and small accent text keep 4.5:1 contrast. */
+  --accent-text: light-dark(#b4532f, #d97757);
+  --primary: light-dark(#b4532f, #d97757);
+  --primary-strong: light-dark(#9c4526, #e28d70);
+  --primary-foreground: light-dark(#ffffff, #1a1a19);
+  --secondary: light-dark(#f8eeea, #2d231f);
+  --secondary-strong: light-dark(#f3e3de, #392923);
+  --secondary-border: light-dark(#eacfc5, #53362c);
+  --secondary-border-strong: light-dark(#e0b7a8, #704435);
+  --secondary-foreground: light-dark(#8a3a1f, #f0b8a1);
+  /* Removals use rose rather than red so they read apart from clay. */
+  --destructive: light-dark(#cd2054, #ff4d6d);
+  --destructive-strong: light-dark(#b01a47, #ff6f8a);
   --destructive-foreground: var(--canvas);
   --danger: var(--destructive);
-  --addition: light-dark(#047857, #34d399);
-  --deletion: light-dark(#be123c, #fb7185);
-  --selection: light-dark(#dfebff, #19283c);
+  --addition: light-dark(#1a8633, #32d74b);
+  --deletion: light-dark(#cd2054, #ff4d6d);
+  --selection: light-dark(#f8e7e1, #402d25);
   /* The slash remains transparent and follows the theme foreground. */
-  --logo-mark: light-dark(#0a0a0a, #fafafa);
-  --radius-control: 8px;
-  --radius-panel: 12px;
-  --shadow-subtle: light-dark(
-    0 1px 2px rgb(36 52 69 / 5%),
-    0 1px 2px rgb(0 0 0 / 28%)
-  );
-  --shadow-surface: light-dark(
-    0 2px 8px rgb(36 52 69 / 4%),
-    0 4px 12px rgb(0 0 0 / 24%)
-  );
-  --shadow-floating: light-dark(
-    0 12px 28px rgb(36 52 69 / 12%),
-    0 16px 36px rgb(0 0 0 / 48%)
-  );
+  --logo-mark: light-dark(#0b0b0b, #f0efec);
+  --radius-control: 6px;
+  --radius-panel: 8px;
+  /* light-dark() only accepts colors, so each layer switches its color. */
+  --shadow-subtle: 0 1px 2px light-dark(rgb(11 11 11 / 5%), rgb(0 0 0 / 30%));
+  --shadow-surface:
+    0 1px 2px light-dark(rgb(11 11 11 / 4%), rgb(0 0 0 / 30%)),
+    0 2px 8px light-dark(rgb(11 11 11 / 3%), rgb(0 0 0 / 20%));
+  --shadow-floating:
+    0 0 0 0.5px light-dark(rgb(0 0 0 / 5%), rgb(255 255 255 / 6%)),
+    0 2px 8px light-dark(rgb(0 0 0 / 4%), rgb(0 0 0 / 30%)),
+    0 12px 32px light-dark(rgb(0 0 0 / 3%), rgb(0 0 0 / 25%));
 }
 
 :root.light {
@@ -173,7 +169,6 @@ body {
   min-height: 100vh;
   color: var(--text);
   background: var(--canvas);
-  letter-spacing: -0.01em;
 }
 
 @layer base {
@@ -199,12 +194,6 @@ body {
   textarea:focus-visible {
     outline: 2px solid var(--accent-text);
     outline-offset: 2px;
-  }
-}
-
-@layer utilities {
-  .font-mono {
-    letter-spacing: 0;
   }
 }
 
@@ -235,7 +224,7 @@ body {
   --trees-border-radius-override: 6px;
   --trees-item-margin-x-override: 5px;
   /* Put the search field on the same rail as the tree rows' highlight
-     boxes; its inner text then aligns with the FILES header text above
+     boxes; its inner text then aligns with the Files header text above
      (12px gutter on mobile, 16px from the md breakpoint up). */
   --trees-padding-inline-override: 5px;
   --trees-icon-nudge-override: 0;
@@ -273,27 +262,35 @@ body {
 }
 
 .diff-scroll diffs-container {
-  /* The copied Pierre themes own code, gutter, and diff highlight colors. */
+  /* The recolored Pierre themes own code, gutter, and diff highlight colors.
+     The line height matches the viewer's virtualizer (diff-viewer.tsx). */
   overflow: hidden;
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-panel);
   box-shadow: var(--shadow-surface);
   font-family: var(--font-code);
-  font-size: 13px;
-  line-height: 20px;
+  font-size: 12px;
+  line-height: 18px;
+  /* These set the color changed lines mix toward (12% in light mode, 20% in
+     dark). Halving the saturated dark-mode green and rose keeps changed
+     lines near a 10% tint, so their syntax colors stay legible. */
+  --diffs-bg-addition-override: light-dark(
+    var(--addition),
+    color-mix(in lab, var(--panel), var(--addition))
+  );
+  --diffs-bg-addition-number-override: var(--diffs-bg-addition-override);
+  --diffs-bg-deletion-override: light-dark(
+    var(--deletion),
+    color-mix(in lab, var(--panel), var(--deletion))
+  );
+  --diffs-bg-deletion-number-override: var(--diffs-bg-deletion-override);
 }
 
 @media (max-width: 767px) {
   .diff-scroll > div {
     margin-left: 12px;
     margin-right: max(0px, 12px - var(--diff-scrollbar-width, 0px));
-  }
-
-  .diff-scroll diffs-container {
-    border-radius: 8px;
-    font-size: 12px;
-    line-height: 18px;
   }
 }
 

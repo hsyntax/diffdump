@@ -9,16 +9,16 @@ variants it selects by default. The JSON files include the complete Shiki /
 TextMate token rules, semantic token rules, and editor colors. The package's
 Shiki modules are generated from these same definitions.
 
-Diffdump registers them under local aliases in `src/lib/diff-themes.ts`,
-without overriding their syntax colors or diff backgrounds. App CSS maps the
-editor and sidebar colors onto Diffdump's surfaces, using Diffshub's foreground
-mixes for controls and borders.
-
-Buttons use a stronger blue treatment derived from Pierre's accent, with a
-darker primary fill in light mode for readable white labels. These app-only
-adjustments do not change the copied theme definitions.
+Diffdump does not use Pierre's colors directly. `src/lib/diff-themes.ts`
+registers `diffdump-light` and `diffdump-dark`, which load these files and
+replace every color with diffdump's warm palette through a per-color mapping.
+Token rules, scopes, and alpha values are kept as copied; only color values
+change, plus a few editor colors whose Pierre value is shared with an
+unrelated syntax role. `src/lib/diff-themes.test.ts` checks that every color
+in both files has a mapping.
 
 Upstream: https://github.com/pierrecomputer/pierre/tree/4f60f29f3b9caf95945ea505bd0cc8b97acb8850/packages/theme
 
 The copied themes are Apache-2.0 licensed. See `LICENSE` and `NOTICE.md`,
-including the original Primer attribution.
+including the original Primer attribution. The recolored themes diffdump
+renders are modified versions of these files.

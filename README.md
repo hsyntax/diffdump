@@ -91,9 +91,11 @@ It is hosted at [diffdump.com](https://diffdump.com).
 - Multi-file, syntax-highlighted patch rendering via
   [`@pierre/diffs`](https://diffs.com/), with unified and split layouts and
   optional line wrapping.
-- Pierre Light and Pierre Dark palettes, with their complete Shiki syntax
-  themes copied from Pierre's shared theme package. Source and license details
-  are in [the vendored themes](src/lib/themes/pierre/README.md).
+- Warm light and dark themes inspired by Claude's desktop app: warm neutrals,
+  a clay accent, system UI type, and JetBrains Mono code at 12/18. Syntax
+  highlighting recolors the complete Shiki themes copied from Pierre's shared
+  theme package; source and license details are in
+  [the vendored themes](src/lib/themes/pierre/README.md).
 - A searchable file tree ([`@pierre/trees`](https://trees.software)) with
   per-file git status for jumping between changed files.
 - Files are automatically categorized as Source, Tests, Docs, or Other — the

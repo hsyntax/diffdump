@@ -2,8 +2,7 @@ import type { HTMLAttributes } from 'react'
 
 import { cn } from '../../lib/cn'
 
-export const eyebrowClassName =
-  'font-mono text-2xs font-medium uppercase tracking-eyebrow'
+export const eyebrowClassName = 'text-xs font-medium'
 
 export function Toolbar({ className, ...props }: HTMLAttributes<HTMLElement>) {
   return (

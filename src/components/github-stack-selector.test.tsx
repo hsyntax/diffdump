@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 
 import { type ComponentProps, type ReactNode } from 'react'
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
@@ -49,6 +49,7 @@ vi.mock('@pierre/icons', () => ({
 afterEach(() => {
   cleanup()
   router.navigate.mockReset()
+  vi.unstubAllGlobals()
 })
 
 const summary: GitHubPullStackSummary = {
@@ -220,5 +221,52 @@ describe('GitHubStackSelector', () => {
 
     await user.click(retryButtons[0])
     expect(onRetry).toHaveBeenCalledOnce()
+  })
+
+  it('shows the chip row only while every chip fits', () => {
+    const callbacks: ResizeObserverCallback[] = []
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: ResizeObserverCallback) {
+          callbacks.push(callback)
+        }
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      },
+    )
+    renderSelector({ status: 'loaded', stack })
+
+    const region = screen.getByTestId('github-stack-selector')
+    const chips = screen
+      .getByTestId('github-stack-pull-102')
+      .closest('nav')?.parentElement
+    if (!chips) {
+      throw new Error('Missing chip row')
+    }
+    function resize(regionWidth: number, chipsWidth: number) {
+      Object.defineProperty(region, 'clientWidth', {
+        configurable: true,
+        value: regionWidth,
+      })
+      Object.defineProperty(chips, 'offsetWidth', {
+        configurable: true,
+        value: chipsWidth,
+      })
+      act(() => {
+        for (const callback of callbacks) {
+          callback([], {} as ResizeObserver)
+        }
+      })
+    }
+
+    resize(200, 480)
+    expect(region.dataset.layout).toBe('compact')
+    expect(chips.className).toContain('sm:invisible')
+
+    resize(640, 480)
+    expect(region.dataset.layout).toBe('chips')
+    expect(chips.className).not.toContain('sm:invisible')
   })
 })

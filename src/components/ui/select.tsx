@@ -7,7 +7,10 @@ import { cn } from '../../lib/cn'
 
 export const Select = SelectPrimitive.Root
 export const SelectGroup = SelectPrimitive.Group
-export const SelectValue = SelectPrimitive.Value
+export function SelectValue(props: SelectPrimitive.Value.Props) {
+  // The slot lets SelectTrigger truncate the value on one line.
+  return <SelectPrimitive.Value data-slot="select-value" {...props} />
+}
 
 export const selectTriggerVariants = cva(
   [
@@ -98,7 +101,7 @@ export function SelectLabel({
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
       className={cn(
-        'px-2 py-1.5 font-mono text-3xs font-medium uppercase tracking-eyebrow text-muted-foreground',
+        'px-2 py-1.5 text-2xs font-medium text-muted-foreground',
         className,
       )}
       {...props}
