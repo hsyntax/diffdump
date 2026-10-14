@@ -6,7 +6,12 @@ import {
   writeStoredViewSettings,
 } from './view-settings'
 
-const defaults = { fileOrder: 'tree', diffStyle: 'unified', wrapLines: false }
+const defaults = {
+  fileOrder: 'tree',
+  diffStyle: 'unified',
+  wrapLines: false,
+  hideWhitespace: true,
+}
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -25,11 +30,13 @@ describe('view settings storage', () => {
       fileOrder: 'category',
       diffStyle: 'split',
       wrapLines: true,
+      hideWhitespace: false,
     })
     expect(readStoredViewSettings()).toEqual({
       fileOrder: 'category',
       diffStyle: 'split',
       wrapLines: true,
+      hideWhitespace: false,
     })
 
     writeStoredViewSettings({ ...readStoredViewSettings(), fileOrder: 'patch' })
@@ -37,6 +44,7 @@ describe('view settings storage', () => {
       fileOrder: 'patch',
       diffStyle: 'split',
       wrapLines: true,
+      hideWhitespace: false,
     })
     expect([...values.keys()]).toEqual([VIEW_SETTINGS_STORAGE_KEY])
   })
@@ -56,6 +64,7 @@ describe('view settings storage', () => {
           fileOrder: 'unknown',
           diffStyle: 'split',
           wrapLines: 'false',
+          hideWhitespace: 'no',
         }),
     })
     expect(readStoredViewSettings()).toEqual({
@@ -67,6 +76,31 @@ describe('view settings storage', () => {
       getItem: () => JSON.stringify({ wrapLines: true }),
     })
     expect(readStoredViewSettings()).toEqual({ ...defaults, wrapLines: true })
+  })
+
+  it('hides whitespace by default, including for settings saved before the option existed', () => {
+    vi.stubGlobal('localStorage', {
+      getItem: () =>
+        JSON.stringify({
+          fileOrder: 'patch',
+          diffStyle: 'split',
+          wrapLines: true,
+        }),
+    })
+    expect(readStoredViewSettings()).toEqual({
+      fileOrder: 'patch',
+      diffStyle: 'split',
+      wrapLines: true,
+      hideWhitespace: true,
+    })
+
+    vi.stubGlobal('localStorage', {
+      getItem: () => JSON.stringify({ hideWhitespace: false }),
+    })
+    expect(readStoredViewSettings()).toEqual({
+      ...defaults,
+      hideWhitespace: false,
+    })
   })
 
   it('keeps the viewer usable without storage or when storage throws', () => {

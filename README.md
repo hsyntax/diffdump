@@ -101,8 +101,13 @@ It is hosted at [diffdump.com](https://diffdump.com).
 - Files are automatically categorized as Source, Tests, Docs, or Other — the
   view follows the file tree order by default, with optional patch and category
   ordering. Category filters include file and addition/deletion counts per group.
-- File order, unified/split layout, and line wrapping preferences are saved
-  locally and restored across page refreshes and diffs.
+- Whitespace-only changes are hidden by default, matching `git diff -w` and
+  GitHub's Hide whitespace: each hunk is re-diffed in the browser with
+  whitespace ignored, so reindented lines show as unchanged while line numbers
+  and review comment anchors stay exact. Files whose only changes are
+  whitespace start collapsed. Turn it off under View.
+- File order, unified/split layout, line wrapping, and whitespace preferences
+  are saved locally and restored across page refreshes and diffs.
 - Files can be marked as Viewed and collapsed, with progress saved locally for
   each GitHub diff or shared-view link.
 - On pull-request routes, inline review comments in unified and split

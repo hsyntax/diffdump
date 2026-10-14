@@ -1,5 +1,7 @@
 import type { FileDiffMetadata } from '@pierre/diffs'
 
+import { hideWhitespaceChanges } from './hide-whitespace'
+
 export const DIFF_CATEGORIES = ['source', 'tests', 'docs', 'other'] as const
 
 export type DiffCategory = (typeof DIFF_CATEGORIES)[number]
@@ -24,6 +26,11 @@ export type ClassifiedDiffFile = {
   category: DiffCategory
   additions: number
   deletions: number
+  /** Changed lines shown as unchanged because they differ only in
+   * whitespace. Zero unless whitespace changes are hidden. */
+  hiddenWhitespaceLines: number
+  /** Whitespace changes are hidden and they were the file's only changes. */
+  whitespaceOnly: boolean
 }
 
 export const DIFF_CATEGORY_DETAILS: Record<
@@ -117,6 +124,33 @@ export function createClassifiedDiffFiles(
       category: classifyDiffFile(file.name),
       additions,
       deletions,
+      hiddenWhitespaceLines: 0,
+      whitespaceOnly: false,
+    }
+  })
+}
+
+/** Swaps in each file's whitespace-hidden diff and recounts its lines. Item
+ * and storage ids are kept, so drafts, viewed state, and annotations follow
+ * the file when whitespace changes are hidden or shown again. */
+export function hideWhitespaceInDiffFiles(
+  files: readonly ClassifiedDiffFile[],
+): ClassifiedDiffFile[] {
+  return files.map((classified) => {
+    const { file, hiddenLineCount, whitespaceOnly } = hideWhitespaceChanges(
+      classified.file,
+    )
+
+    if (file === classified.file) {
+      return classified
+    }
+
+    return {
+      ...classified,
+      ...getFileLineSummary(file),
+      file,
+      hiddenWhitespaceLines: hiddenLineCount,
+      whitespaceOnly,
     }
   })
 }

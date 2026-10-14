@@ -1,10 +1,11 @@
-import type { FileDiffMetadata } from '@pierre/diffs'
+import { parsePatchFiles, type FileDiffMetadata } from '@pierre/diffs'
 import { describe, expect, it } from 'vitest'
 
 import {
   classifyDiffFile,
   createClassifiedDiffFiles,
   filterAndOrderDiffFiles,
+  hideWhitespaceInDiffFiles,
   summarizeDiffFiles,
 } from './diff-files'
 
@@ -121,6 +122,75 @@ describe('classified diff files', () => {
         (file) => file.file.name,
       ),
     ).toEqual(['tests/parser.test.ts'])
+  })
+})
+
+describe('hidden whitespace', () => {
+  const [reindented, formatted, renamed] = parsePatchFiles(
+    [
+      'diff --git a/src/run.ts b/src/run.ts',
+      '--- a/src/run.ts',
+      '+++ b/src/run.ts',
+      '@@ -1,4 +1,6 @@',
+      ' export function run() {',
+      '-  step()',
+      '-  finish()',
+      '+  if (ready) {',
+      '+    step()',
+      '+    finish()',
+      '+  }',
+      ' }',
+      'diff --git a/src/format.ts b/src/format.ts',
+      '--- a/src/format.ts',
+      '+++ b/src/format.ts',
+      '@@ -1,1 +1,1 @@',
+      '-const a  = 1',
+      '+const a = 1',
+      'diff --git a/src/rename.ts b/src/rename.ts',
+      '--- a/src/rename.ts',
+      '+++ b/src/rename.ts',
+      '@@ -1,1 +1,1 @@',
+      '-old()',
+      '+renamed()',
+      '',
+    ].join('\n'),
+    'hidden-whitespace',
+    true,
+  ).flatMap((patch) => patch.files)
+
+  it('swaps in the whitespace-hidden diff under the same ids and recounts lines', () => {
+    const classified = createClassifiedDiffFiles([
+      reindented!,
+      formatted!,
+      renamed!,
+    ])
+    const hidden = hideWhitespaceInDiffFiles(classified)
+
+    expect(classified.map((file) => file.additions)).toEqual([4, 1, 1])
+    expect(hidden.slice(0, 2)).toMatchObject([
+      {
+        id: classified[0]!.id,
+        storageId: classified[0]!.storageId,
+        additions: 2,
+        deletions: 0,
+        hiddenWhitespaceLines: 3,
+        whitespaceOnly: false,
+      },
+      {
+        id: classified[1]!.id,
+        additions: 0,
+        deletions: 0,
+        hiddenWhitespaceLines: 1,
+        whitespaceOnly: true,
+      },
+    ])
+    expect(hidden[0]!.file).not.toBe(reindented)
+    expect(hidden[2]).toBe(classified[2])
+    expect(summarizeDiffFiles(hidden)).toMatchObject({
+      files: 3,
+      additions: 3,
+      deletions: 1,
+    })
   })
 })
 

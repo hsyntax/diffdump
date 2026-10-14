@@ -113,6 +113,7 @@ import {
   DIFF_CATEGORY_DETAILS,
   createClassifiedDiffFiles,
   filterAndOrderDiffFiles,
+  hideWhitespaceInDiffFiles,
   summarizeDiffFiles,
   type DiffCategory,
   type DiffCategoryFilter,
@@ -239,7 +240,12 @@ export default function DiffViewer(props: DiffViewerProps) {
   // The viewer mounts only on the client, so saved settings can be read before
   // its first render. Keep the preferred layout when a narrow canvas forces unified.
   const [viewSettings, setViewSettings] = useState(readStoredViewSettings)
-  const { diffStyle: preferredDiffStyle, wrapLines, fileOrder } = viewSettings
+  const {
+    diffStyle: preferredDiffStyle,
+    wrapLines,
+    fileOrder,
+    hideWhitespace,
+  } = viewSettings
   const [splitViewAvailable, setSplitViewAvailable] = useState(false)
   const diffStyle = splitViewAvailable ? preferredDiffStyle : 'unified'
   const [categoryFilter, setCategoryFilter] =
@@ -258,8 +264,9 @@ export default function DiffViewer(props: DiffViewerProps) {
   }))
   const viewedFileIds =
     viewedState.reviewId === reviewId ? viewedState.fileIds : EMPTY_FILE_ID_SET
-  /* Viewed files render collapsed; search navigation expands a match's file
-     without unticking its Viewed checkbox. */
+  /* Viewed files and files with only hidden whitespace changes render
+     collapsed; search navigation expands a match's file without unticking
+     its Viewed checkbox, and a whitespace-only file's header can show it. */
   const [expandedOverrides, setExpandedOverrides] =
     useState<ReadonlySet<string>>(EMPTY_FILE_ID_SET)
   /* Unsent drafts are keyed by owner/repo/pull/headSha so they never restore
@@ -345,22 +352,41 @@ export default function DiffViewer(props: DiffViewerProps) {
     () => createClassifiedDiffFiles(parsed.files),
     [parsed.files],
   )
+  /* Hiding whitespace reshapes only what renders. Line numbers and hunk
+     boundaries are unchanged, so review anchoring keeps using the parsed
+     patch. */
+  const displayedFiles = useMemo(
+    () =>
+      hideWhitespace
+        ? hideWhitespaceInDiffFiles(classifiedFiles)
+        : classifiedFiles,
+    [classifiedFiles, hideWhitespace],
+  )
   const summary = useMemo(
-    () => summarizeDiffFiles(classifiedFiles),
-    [classifiedFiles],
+    () => summarizeDiffFiles(displayedFiles),
+    [displayedFiles],
   )
   const filteredFiles = useMemo(
     () =>
       filterAndOrderDiffFiles(
-        classifiedFiles,
+        displayedFiles,
         categoryFilter,
         fileOrder === 'tree' ? 'patch' : fileOrder,
       ),
-    [categoryFilter, classifiedFiles, fileOrder],
+    [categoryFilter, displayedFiles, fileOrder],
   )
   const filesById = useMemo(
-    () => new Map(classifiedFiles.map((file) => [file.id, file])),
-    [classifiedFiles],
+    () => new Map(displayedFiles.map((file) => [file.id, file])),
+    [displayedFiles],
+  )
+  const whitespaceOnlyStorageIds = useMemo(
+    () =>
+      new Set(
+        displayedFiles
+          .filter((file) => file.whitespaceOnly)
+          .map((file) => file.storageId),
+      ),
+    [displayedFiles],
   )
   const filePickerEntries = useMemo(
     () =>
@@ -429,12 +455,22 @@ export default function DiffViewer(props: DiffViewerProps) {
         : EMPTY_ANNOTATION_MAP,
     [composer, currentThreads, drafts, itemIdByPath, reviewEnabled],
   )
+  const isFileCollapsed = useCallback(
+    (storageId: string) =>
+      (viewedFileIds.has(storageId) ||
+        whitespaceOnlyStorageIds.has(storageId)) &&
+      !expandedOverrides.has(storageId),
+    [expandedOverrides, viewedFileIds, whitespaceOnlyStorageIds],
+  )
   /* Controlled CodeView items only re-render when `version` changes, so each
-     item's version carries an annotation epoch next to the collapsed bit. The
-     epoch advances whenever the item's annotation set — anchors or metadata
-     identities — changes; the ref cache is only mutated on such changes, so
-     repeated renders with the same inputs stay idempotent. */
-  const annotationVersionsRef = useRef({
+     item's version carries an epoch next to the collapsed bit. The epoch
+     advances whenever the item's diff (hiding or showing whitespace swaps it)
+     or annotation set — anchors or metadata identities — changes; the ref
+     cache is only mutated on such changes, so repeated renders with the same
+     inputs stay idempotent. */
+  const itemVersionsRef = useRef({
+    fileIds: new WeakMap<FileDiffMetadata, number>(),
+    nextFileId: 1,
     metadataIds: new WeakMap<ReviewCommentMetadata, number>(),
     nextMetadataId: 1,
     epochs: new Map<string, { signature: string; epoch: number }>(),
@@ -442,11 +478,15 @@ export default function DiffViewer(props: DiffViewerProps) {
   const items = useMemo<CodeViewDiffItem<ReviewCommentMetadata>[]>(
     () =>
       visibleFiles.map(({ id, storageId, file }) => {
-        const collapsed =
-          viewedFileIds.has(storageId) && !expandedOverrides.has(storageId)
+        const collapsed = isFileCollapsed(storageId)
         const annotations = reviewAnnotations.get(id)
-        const tracker = annotationVersionsRef.current
-        const signature = (annotations ?? EMPTY_ANNOTATION_LIST)
+        const tracker = itemVersionsRef.current
+        let fileId = tracker.fileIds.get(file)
+        if (fileId === undefined) {
+          fileId = tracker.nextFileId++
+          tracker.fileIds.set(file, fileId)
+        }
+        const annotationSignature = (annotations ?? EMPTY_ANNOTATION_LIST)
           .map((annotation) => {
             let metadataId = tracker.metadataIds.get(annotation.metadata)
             if (metadataId === undefined) {
@@ -456,6 +496,7 @@ export default function DiffViewer(props: DiffViewerProps) {
             return `${annotation.side}:${annotation.lineNumber}:${metadataId}`
           })
           .join('|')
+        const signature = `${fileId}#${annotationSignature}`
         let versions = tracker.epochs.get(id)
         if (versions === undefined || versions.signature !== signature) {
           versions = { signature, epoch: (versions?.epoch ?? -1) + 1 }
@@ -471,7 +512,7 @@ export default function DiffViewer(props: DiffViewerProps) {
           version: versions.epoch * 2 + (collapsed ? 1 : 0),
         }
       }),
-    [expandedOverrides, reviewAnnotations, viewedFileIds, visibleFiles],
+    [isFileCollapsed, reviewAnnotations, visibleFiles],
   )
   const renderHeaderPrefix = useCallback(
     (item: CodeViewItem<ReviewCommentMetadata>) => {
@@ -480,6 +521,24 @@ export default function DiffViewer(props: DiffViewerProps) {
       return file ? <DiffCategoryBadge category={file.category} /> : null
     },
     [filesById],
+  )
+  const setFileExpanded = useCallback(
+    (storageId: string, expanded: boolean) => {
+      setExpandedOverrides((current) => {
+        if (current.has(storageId) === expanded) {
+          return current
+        }
+
+        const next = new Set(current)
+        if (expanded) {
+          next.add(storageId)
+        } else {
+          next.delete(storageId)
+        }
+        return next
+      })
+    },
+    [],
   )
   const setFileViewed = useCallback(
     (storageId: string, viewed: boolean) => {
@@ -500,35 +559,20 @@ export default function DiffViewer(props: DiffViewerProps) {
       })
       /* Manually toggling Viewed retires any search expansion so the
          checkbox collapses and expands the card again. */
-      setExpandedOverrides((current) => {
-        if (!current.has(storageId)) {
-          return current
-        }
-
-        const next = new Set(current)
-        next.delete(storageId)
-        return next
-      })
+      setFileExpanded(storageId, false)
     },
-    [reviewId],
+    [reviewId, setFileExpanded],
   )
   const revealFileForSearch = useCallback(
     (storageId: string) => {
-      if (!viewedFileIds.has(storageId)) {
-        return
+      if (
+        viewedFileIds.has(storageId) ||
+        whitespaceOnlyStorageIds.has(storageId)
+      ) {
+        setFileExpanded(storageId, true)
       }
-
-      setExpandedOverrides((current) => {
-        if (current.has(storageId)) {
-          return current
-        }
-
-        const next = new Set(current)
-        next.add(storageId)
-        return next
-      })
     },
-    [viewedFileIds],
+    [setFileExpanded, viewedFileIds, whitespaceOnlyStorageIds],
   )
   const renderHeaderMetadata = useCallback(
     (item: CodeViewItem<ReviewCommentMetadata>) => {
@@ -543,6 +587,18 @@ export default function DiffViewer(props: DiffViewerProps) {
       return (
         <span className="inline-flex items-center gap-3">
           {expansion && <FileExpansionStatus state={expansion} />}
+          {file.whitespaceOnly ? (
+            <WhitespaceOnlyControl
+              expanded={!isFileCollapsed(file.storageId)}
+              onExpandedChange={(expanded) =>
+                setFileExpanded(file.storageId, expanded)
+              }
+            />
+          ) : (
+            file.hiddenWhitespaceLines > 0 && (
+              <HiddenWhitespaceNote count={file.hiddenWhitespaceLines} />
+            )
+          )}
           <ViewedFileControl
             viewed={viewed}
             onChange={(nextViewed) => setFileViewed(file.storageId, nextViewed)}
@@ -550,7 +606,14 @@ export default function DiffViewer(props: DiffViewerProps) {
         </span>
       )
     },
-    [expansionStates, filesById, setFileViewed, viewedFileIds],
+    [
+      expansionStates,
+      filesById,
+      isFileCollapsed,
+      setFileExpanded,
+      setFileViewed,
+      viewedFileIds,
+    ],
   )
   const updateDrafts = useCallback(
     (
@@ -1042,7 +1105,7 @@ export default function DiffViewer(props: DiffViewerProps) {
     reviewItemCount: reviewThreads.length + drafts.length,
     viewedFileCount,
     fileCount: summary.files,
-    filePickerKey: `${viewerId}:${categoryFilter}:${fileOrder}:${viewedFileCount}`,
+    filePickerKey: `${viewerId}:${categoryFilter}:${fileOrder}:${viewedFileCount}:${hideWhitespace}`,
     filePickerProps: {
       entries: filePickerEntries,
       onSelect: scrollToFile,
@@ -1234,6 +1297,13 @@ export default function DiffViewer(props: DiffViewerProps) {
                 wrapLines={wrapLines}
                 onWrapLinesChange={(wrapLines) =>
                   setViewSettings((settings) => ({ ...settings, wrapLines }))
+                }
+                hideWhitespace={hideWhitespace}
+                onHideWhitespaceChange={(hideWhitespace) =>
+                  setViewSettings((settings) => ({
+                    ...settings,
+                    hideWhitespace,
+                  }))
                 }
               />
               {reviewEnabled && (
@@ -1534,6 +1604,50 @@ function ViewedFileControl({
   )
 }
 
+function HiddenWhitespaceNote({ count }: { count: number }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <span className="hidden cursor-help text-2xs font-medium text-muted-foreground sm:inline" />
+        }
+      >
+        {count} whitespace {count === 1 ? 'change' : 'changes'} hidden
+      </TooltipTrigger>
+      <TooltipContent>
+        Lines that differ only in whitespace show as unchanged. Turn off Hide
+        whitespace under View to see them.
+      </TooltipContent>
+    </Tooltip>
+  )
+}
+
+function WhitespaceOnlyControl({
+  expanded,
+  onExpandedChange,
+}: {
+  expanded: boolean
+  onExpandedChange: (expanded: boolean) => void
+}) {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-2xs font-medium text-muted-foreground">
+      Whitespace only
+      <Button
+        variant="ghost"
+        size="2xs"
+        aria-label={
+          expanded
+            ? 'Hide whitespace-only changes'
+            : 'Show whitespace-only changes'
+        }
+        onClick={() => onExpandedChange(!expanded)}
+      >
+        {expanded ? 'Hide' : 'Show'}
+      </Button>
+    </span>
+  )
+}
+
 function CategoryFilters({
   activeFilter,
   summary,
@@ -1604,6 +1718,8 @@ function ViewOptionsControl({
   splitViewAvailable,
   wrapLines,
   onWrapLinesChange,
+  hideWhitespace,
+  onHideWhitespaceChange,
 }: {
   order: DiffFileOrder | 'tree'
   onOrderChange: (order: DiffFileOrder | 'tree') => void
@@ -1612,8 +1728,11 @@ function ViewOptionsControl({
   splitViewAvailable: boolean
   wrapLines: boolean
   onWrapLinesChange: (wrap: boolean) => void
+  hideWhitespace: boolean
+  onHideWhitespaceChange: (hide: boolean) => void
 }) {
   const wrapLinesId = useId()
+  const hideWhitespaceId = useId()
 
   return (
     <Popover>
@@ -1668,6 +1787,17 @@ function ViewOptionsControl({
             id={wrapLinesId}
             checked={wrapLines}
             onCheckedChange={onWrapLinesChange}
+          />
+        </label>
+        <label
+          className="flex cursor-pointer items-center justify-between rounded-control px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground"
+          htmlFor={hideWhitespaceId}
+        >
+          Hide whitespace
+          <Switch
+            id={hideWhitespaceId}
+            checked={hideWhitespace}
+            onCheckedChange={onHideWhitespaceChange}
           />
         </label>
       </PopoverContent>
