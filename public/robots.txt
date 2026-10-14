@@ -3,6 +3,7 @@ Allow: /
 Allow: /llms.txt
 Disallow: /d$
 Disallow: /d?
+Disallow: /d/
 Disallow: /github$
 Disallow: /github?
 Disallow: /view/

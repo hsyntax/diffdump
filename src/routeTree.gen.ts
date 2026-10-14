@@ -19,6 +19,7 @@ import { Route as InstallRouteImport } from './routes/install'
 import { Route as ShareGitDiffRouteImport } from './routes/share-git-diff'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as CliDddRouteImport } from './routes/cli.ddd'
+import { Route as DSlugRouteImport } from './routes/d.$slug'
 import { Route as DocsIndexRouteImport } from './routes/docs.index'
 import { Route as DocsCliRouteImport } from './routes/docs.cli'
 import { Route as DocsGithubDiffViewerRouteImport } from './routes/docs.github-diff-viewer'
@@ -75,6 +76,11 @@ const CliDddRoute = CliDddRouteImport.update({
   path: '/cli/ddd',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DSlugRoute = DSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => DRoute,
+} as any)
 const DocsIndexRoute = DocsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -104,7 +110,7 @@ const ViewSlugRoute = ViewSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/d': typeof DRoute
+  '/d': typeof DRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
   '/github': typeof GithubRoute
   '/github-diff-viewer': typeof GithubDiffViewerRoute
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/share-git-diff': typeof ShareGitDiffRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/cli/ddd': typeof CliDddRoute
+  '/d/$slug': typeof DSlugRoute
   '/docs/cli': typeof DocsCliRoute
   '/docs/github-diff-viewer': typeof DocsGithubDiffViewerRoute
   '/docs/share-git-diff': typeof DocsShareGitDiffRoute
@@ -121,13 +128,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/d': typeof DRoute
+  '/d': typeof DRouteWithChildren
   '/github': typeof GithubRoute
   '/github-diff-viewer': typeof GithubDiffViewerRoute
   '/install': typeof InstallRoute
   '/share-git-diff': typeof ShareGitDiffRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/cli/ddd': typeof CliDddRoute
+  '/d/$slug': typeof DSlugRoute
   '/docs/cli': typeof DocsCliRoute
   '/docs/github-diff-viewer': typeof DocsGithubDiffViewerRoute
   '/docs/share-git-diff': typeof DocsShareGitDiffRoute
@@ -138,7 +146,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/d': typeof DRoute
+  '/d': typeof DRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
   '/github': typeof GithubRoute
   '/github-diff-viewer': typeof GithubDiffViewerRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/share-git-diff': typeof ShareGitDiffRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/cli/ddd': typeof CliDddRoute
+  '/d/$slug': typeof DSlugRoute
   '/docs/cli': typeof DocsCliRoute
   '/docs/github-diff-viewer': typeof DocsGithubDiffViewerRoute
   '/docs/share-git-diff': typeof DocsShareGitDiffRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/share-git-diff'
     | '/sitemap.xml'
     | '/cli/ddd'
+    | '/d/$slug'
     | '/docs/cli'
     | '/docs/github-diff-viewer'
     | '/docs/share-git-diff'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/share-git-diff'
     | '/sitemap.xml'
     | '/cli/ddd'
+    | '/d/$slug'
     | '/docs/cli'
     | '/docs/github-diff-viewer'
     | '/docs/share-git-diff'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/share-git-diff'
     | '/sitemap.xml'
     | '/cli/ddd'
+    | '/d/$slug'
     | '/docs/cli'
     | '/docs/github-diff-viewer'
     | '/docs/share-git-diff'
@@ -208,7 +220,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
-  DRoute: typeof DRoute
+  DRoute: typeof DRouteWithChildren
   DocsRoute: typeof DocsRouteWithChildren
   GithubRoute: typeof GithubRoute
   GithubDiffViewerRoute: typeof GithubDiffViewerRoute
@@ -291,6 +303,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CliDddRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/d/$slug': {
+      id: '/d/$slug'
+      path: '/$slug'
+      fullPath: '/d/$slug'
+      preLoaderRoute: typeof DSlugRouteImport
+      parentRoute: typeof DRoute
+    }
     '/docs/': {
       id: '/docs/'
       path: '/'
@@ -329,6 +348,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DRouteChildren {
+  DSlugRoute: typeof DSlugRoute
+}
+
+const DRouteChildren: DRouteChildren = {
+  DSlugRoute: DSlugRoute,
+}
+
+const DRouteWithChildren = DRoute._addFileChildren(DRouteChildren)
+
 interface DocsRouteChildren {
   DocsCliRoute: typeof DocsCliRoute
   DocsGithubDiffViewerRoute: typeof DocsGithubDiffViewerRoute
@@ -348,7 +377,7 @@ const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
-  DRoute: DRoute,
+  DRoute: DRouteWithChildren,
   DocsRoute: DocsRouteWithChildren,
   GithubRoute: GithubRoute,
   GithubDiffViewerRoute: GithubDiffViewerRoute,

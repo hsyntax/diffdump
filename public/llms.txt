@@ -29,12 +29,22 @@ Terminal clients may add `X-Diffdump-GitHub-Repo: owner/repository` and `X-Diffd
 
 Shared diffs use random 96-bit URL slugs, are stored in a private Cloudflare R2 bucket, expire after 24 hours, and are marked `noindex, nofollow`. Share URLs are unlisted rather than access-controlled; anyone possessing a URL can open it. There is no public listing.
 
+Previously uploaded diffs can be downloaded from an active share link. In the shared viewer, select **Download diff** beside **Copy link** to save the original patch as `diffdump-<slug>.diff`. Viewer file filters and whitespace settings do not alter the download.
+
+For terminal or script downloads, replace `/view/` in the share URL with `/d/` and send `GET https://diffdump.com/d/<slug>`. Replace `YOUR_SLUG` below with the slug from your share URL:
+
+```sh
+curl -fS https://diffdump.com/d/YOUR_SLUG -o changes.diff
+```
+
+A successful download returns `200 OK` with the original patch as `text/x-diff; charset=utf-8` and `Content-Disposition: attachment; filename="diffdump-<slug>.diff"`. Missing, invalid, or expired shares return `404`; storage failures return `500`. Download responses use `Cache-Control: no-store`. Downloads use the share's original 24-hour expiry and do not extend it.
+
 ## Primary resources
 
 - [Diffdump](https://diffdump.com/): Review a GitHub diff or create an unlisted diff share.
 - [Documentation](https://diffdump.com/docs): Choose a workflow for reviewing and sharing code changes.
 - [GitHub diff viewer](https://diffdump.com/docs/github-diff-viewer): Open a public or private GitHub pull request, commit, or comparison.
-- [Share a Git diff](https://diffdump.com/docs/share-git-diff): Turn a raw unified diff into an unlisted 24-hour review link.
+- [Share a Git diff](https://diffdump.com/docs/share-git-diff): Create an unlisted 24-hour review link and download the original uploaded patch.
 - [CLI workflow](https://diffdump.com/docs/cli): Pipe working-tree, staged, or committed changes to a review URL.
 - [Source and documentation](https://github.com/hsyntax/diffdump): Source code, complete capabilities, architecture, local development, and deployment instructions.
 

@@ -10,10 +10,10 @@ import { createPageHead, createTechArticleStructuredData } from '../lib/seo'
 
 const title = 'Share a Git Diff Online with an Expiring Link | Diffdump'
 const description =
-  'Paste or pipe a unified Git diff to create a clean, unlisted review link that expires automatically after 24 hours.'
+  'Share a unified Git diff with an unlisted 24-hour review link, then download the original patch from the viewer or with curl.'
 const path = '/docs/share-git-diff' as const
 const datePublished = '2026-07-29'
-const dateModified = '2026-08-05'
+const dateModified = '2026-10-14'
 
 export const Route = createFileRoute('/docs/share-git-diff')({
   head: () => ({
@@ -71,6 +71,32 @@ function ShareGitDiffGuide() {
           open the returned URL immediately.
         </p>
         <GuideCode>{`git diff | curl -T- https://diffdump.com/d | xargs open`}</GuideCode>
+      </GuideSection>
+
+      <GuideSection title="Download an uploaded diff">
+        <p>
+          Open the shared review link and select <strong>Download diff</strong>{' '}
+          beside <strong>Copy link</strong> to save the original uploaded patch
+          as{' '}
+          <code className="font-mono text-foreground">
+            {'diffdump-<slug>.diff'}
+          </code>
+          . File filters and whitespace settings in the viewer do not change the
+          downloaded patch.
+        </p>
+        <p>
+          To download from the terminal, replace{' '}
+          <code className="font-mono text-foreground">/view/</code> in the share
+          URL with <code className="font-mono text-foreground">/d/</code>.
+          Replace <code className="font-mono text-foreground">YOUR_SLUG</code>{' '}
+          below with the slug from your share URL:
+        </p>
+        <GuideCode>{`curl -fS https://diffdump.com/d/YOUR_SLUG -o changes.diff`}</GuideCode>
+        <p>
+          Downloads use the share’s original 24-hour expiry. Downloading does
+          not extend it. Missing, invalid, or expired share links return{' '}
+          <code className="font-mono text-foreground">404</code>.
+        </p>
       </GuideSection>
 
       <GuideSection title="What is stored?">

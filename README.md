@@ -86,6 +86,23 @@ It is hosted at [diffdump.com](https://diffdump.com).
   Public repositories work anonymously; private repositories use the optional
   token already stored in that viewer's browser.
 
+### Download a shared diff
+
+- Open an uploaded diff’s review link and select **Download diff** beside
+  **Copy link** to save the original patch as `diffdump-<slug>.diff`. File
+  filters and whitespace settings do not change the downloaded patch.
+- For terminal or script downloads, replace `/view/` in the share URL with
+  `/d/`. Replace `YOUR_SLUG` below with the slug from your share URL:
+
+  ```bash
+  curl -fS https://diffdump.com/d/YOUR_SLUG -o changes.diff
+  ```
+
+  `GET /d/<slug>` returns the raw patch with `200 OK` and an attachment
+  filename. Missing, invalid, or expired shares return `404`; storage
+  failures return `500`. Responses are not cached. Downloads use the share’s
+  original 24-hour expiry and do not extend it.
+
 ### Review view
 
 - Multi-file, syntax-highlighted patch rendering via

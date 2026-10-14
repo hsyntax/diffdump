@@ -33,6 +33,7 @@ import {
   IconArrowUpRight,
   IconCheck,
   IconCopy,
+  IconDownload,
   IconSearch,
   IconSidebar,
   IconSwitches,
@@ -1137,7 +1138,9 @@ export default function DiffViewer(props: DiffViewerProps) {
               <ExpiryCountdown expiresAt={expiresAt} />
             </span>
           )}
-          <GitHubRepoLink />
+          <GitHubRepoLink
+            className={!isGitHubDiff ? 'hidden sm:inline-flex' : undefined}
+          />
           <ThemeToggle />
           <Link
             className={cn(
@@ -1159,33 +1162,46 @@ export default function DiffViewer(props: DiffViewerProps) {
               <IconArrowUpRight aria-hidden="true" />
             </a>
           ) : (
-            <Button variant="primary" size="sm" onClick={copyShareLink}>
-              {copied ? (
-                <IconCheck aria-hidden="true" />
-              ) : (
-                <IconCopy aria-hidden="true" />
-              )}
-              {/* Both labels occupy the same grid cell so the button keeps
+            <>
+              <a
+                className={cn(
+                  buttonVariants({ variant: 'outline', size: 'sm' }),
+                  'w-8 px-0 sm:w-auto sm:px-3',
+                )}
+                href={`/d/${props.slug}`}
+                aria-label="Download diff"
+              >
+                <IconDownload aria-hidden="true" />
+                <span className="hidden sm:inline">Download diff</span>
+              </a>
+              <Button variant="primary" size="sm" onClick={copyShareLink}>
+                {copied ? (
+                  <IconCheck aria-hidden="true" />
+                ) : (
+                  <IconCopy aria-hidden="true" />
+                )}
+                {/* Both labels occupy the same grid cell so the button keeps
                   the wider label's width when the text swaps on copy. */}
-              <span className="grid justify-items-center">
-                <span
-                  className={cn(
-                    'col-start-1 row-start-1',
-                    copied && 'invisible',
-                  )}
-                >
-                  Copy link
+                <span className="grid justify-items-center">
+                  <span
+                    className={cn(
+                      'col-start-1 row-start-1',
+                      copied && 'invisible',
+                    )}
+                  >
+                    Copy link
+                  </span>
+                  <span
+                    className={cn(
+                      'col-start-1 row-start-1',
+                      !copied && 'invisible',
+                    )}
+                  >
+                    Copied
+                  </span>
                 </span>
-                <span
-                  className={cn(
-                    'col-start-1 row-start-1',
-                    !copied && 'invisible',
-                  )}
-                >
-                  Copied
-                </span>
-              </span>
-            </Button>
+              </Button>
+            </>
           )}
         </div>
       </header>

@@ -10,10 +10,10 @@ import { createPageHead, createTechArticleStructuredData } from '../lib/seo'
 
 const title = 'Install the Diffdump CLI and Review Git Changes | Diffdump'
 const description =
-  'Install ddd to open working-tree changes, commits, branches, and pull requests in Diffdump, or upload a patch directly with curl.'
+  'Install ddd to open Git changes in Diffdump, or use curl to upload a patch and download an existing shared diff.'
 const path = '/docs/cli' as const
 const datePublished = '2026-07-29'
-const dateModified = '2026-08-05'
+const dateModified = '2026-10-14'
 
 export const Route = createFileRoute('/docs/cli')({
   head: () => ({
@@ -167,6 +167,30 @@ function CliGuide() {
         <GuideCode>{`git diff | curl -T- https://diffdump.com/d | xargs open`}</GuideCode>
       </GuideSection>
 
+      <GuideSection title="Download an uploaded diff">
+        <p>
+          Retrieve the original uploaded patch with an HTTP GET request to{' '}
+          <code className="font-mono text-foreground">/d/YOUR_SLUG</code>. Use
+          the slug from the shared review URL’s{' '}
+          <code className="font-mono text-foreground">/view/YOUR_SLUG</code>{' '}
+          path:
+        </p>
+        <GuideCode>{`curl -fS https://diffdump.com/d/YOUR_SLUG -o changes.diff`}</GuideCode>
+        <p>
+          A successful request returns{' '}
+          <code className="font-mono text-foreground">200</code> with the raw
+          patch. Missing, invalid, or expired shares return{' '}
+          <code className="font-mono text-foreground">404</code>; storage
+          failures return <code className="font-mono text-foreground">500</code>
+          . Downloads use the share’s original 24-hour expiry and do not extend
+          it.
+        </p>
+        <p>
+          You can also open the shared review link and select{' '}
+          <strong>Download diff</strong> beside <strong>Copy link</strong>.
+        </p>
+      </GuideSection>
+
       <GuideSection title="Expand context from GitHub">
         <p>
           Include the canonical GitHub repository and the full base commit SHA
@@ -190,7 +214,7 @@ git -c core.quotepath=off diff --full-index --binary "$BASE_SHA" |
         </p>
       </GuideSection>
 
-      <GuideSection title="HTTP responses">
+      <GuideSection title="Upload HTTP responses">
         <div className="overflow-x-auto rounded-panel border border-line">
           <table className="w-full min-w-[560px] border-collapse text-left text-sm">
             <thead className="bg-panel text-foreground">
@@ -232,8 +256,8 @@ git -c core.quotepath=off diff --full-index --binary "$BASE_SHA" |
       <GuideSection title="Security and expiry">
         <p>
           Uploads create unlisted URLs, not authenticated shares. Anyone with
-          the link can view its contents until it expires after 24 hours. Remove
-          secrets before uploading a patch.
+          the link can view or download its contents until it expires after 24
+          hours. Remove secrets before uploading a patch.
         </p>
       </GuideSection>
 
